@@ -9,3 +9,8 @@
         "sprit": 2
     }]
 }
+
+"Pizza":{1 : {"Size" : 12,
+        "Type" : "Neapolitan",
+        "Toppings" : ["cheese", "apple", "meat"]
+        }}
