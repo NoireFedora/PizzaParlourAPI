@@ -1,0 +1,11 @@
+{
+    "Pizza":[{"Size" : 12,
+        "Type" : "Neapolitan",
+        "Toppings" : ["cheese", "apple", "meat"]
+        }],
+
+    "Drinks": [{
+        "coke": 1,
+        "sprit": 2
+    }]
+}
