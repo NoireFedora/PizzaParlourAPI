@@ -1,4 +1,6 @@
 import flask
+import json
+import csv
 from flask import Flask, request
 
 app = Flask("Assignment 2")
@@ -12,6 +14,8 @@ def welcome_pizza():
 order_id = 0
 orders = {}
 
+with open('menu.json') as json_file:
+    menu = json.load(json_file)
 
 def print_receipt(orders):
     for order in orders:
@@ -56,6 +60,30 @@ def cancel_order(order_id):
         return status_code
     del orders[order_id]
     return "Cancel Done"
+
+@app.route('/pizza/get_menu/<item>', methods=['GET'])
+def get_menu(item):
+    if item == 'FULL':
+        return menu
+    elif item not in menu:
+        status_code = flask.Response(status=404)
+        return status_code
+    else:
+        return str(menu[item])
+
+@app.route('/pizza/delivery/<method>', methods=['POST'])
+def delivery(method):
+    if method == 'PickUp':
+        return "Thank you for ordering"
+    elif method == 'InHouse' or method == 'UberEats':
+        content = request.get_json()
+        for order in orders:
+             if order == content["order_id"]:
+                content["order_details"] = orders[order]
+                content["Method"] = method
+                orders[order]["Delivery"] = content
+        return content
+    elif method == 'Foodora':
 
 
 if __name__ == "__main__":
