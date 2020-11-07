@@ -40,7 +40,7 @@ def json_to_csv(json):
 def get_id():
     global order_id
     order_id += 1
-    return order_id
+    return str(order_id)
 
 # Submit an order
 @app.route('/pizza/submit_order', methods=['POST'])
