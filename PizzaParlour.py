@@ -114,7 +114,6 @@ def get_id():
     global order_id
     order_id += 1
     return str(order_id)
-<<<<<<< HEAD
 
 # Submit a pizza request
 @app.route('/pizza/submit_pizza/<delivery>', methods=['POST'])
@@ -156,9 +155,6 @@ def submit_pizza(delivery):
             else:
                 orders[id].pizza_list += [Pizza(content["Size"], content["Type"], content["Toppings"])]
         return "Pizza Request Accepted"
-=======
->>>>>>> e81fb24df0d446386050c0a36b6181cc6187b871
-
     else:
         status_code = flask.Response(status=404)
         return status_code
