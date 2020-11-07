@@ -1,16 +1,9 @@
+
 {
-    "Pizza":[{"Size" : 12,
-        "Type" : "Neapolitan",
-        "Toppings" : ["cheese", "apple", "meat"]
-        }],
-
-    "Drinks": [{
-        "coke": 1,
-        "sprit": 2
-    }]
+  "id"   : 1,
+  "Size" : 12,
+  "Type" : "Neapolitan",
+  "Toppings" : ["cheese", "apple", "meat"]
+  "address" : "zzzzzzzzzzzzzzzzzzzzzzzzzzz"
 }
-
-"Pizza":{1 : {"Size" : 12,
-        "Type" : "Neapolitan",
-        "Toppings" : ["cheese", "apple", "meat"]
-        }}
+id,Size,Type,Toppings,address\n 1, 12, Neapolitan,cheese:apple:meat,zzzzzzzzzzzzzzzzzzzzzzzzzzz
