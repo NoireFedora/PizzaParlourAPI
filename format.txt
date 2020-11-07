@@ -1,0 +1,23 @@
+
+{
+  "id"   : 1,
+  "Size" : 12,
+  "Type" : "Neapolitan",
+  "Toppings" : ["cheese", "apple", "meat"]
+}
+
+"id,Size,Type,Toppings,address\n 1, 12, Neapolitan,cheese:apple:meat,zzzzzzzzzzzzzzzzzzzzzzzzzzz"
+
+{
+   "id"   : 1,
+    "drink" : ["coke", "sprit"]
+}
+
+"id,drink /n 1, sprit: coke:water"
+
+{
+    "id"   : 1,
+    "address" : "sdfsdfsdfsdfsdfsdf"
+}
+
+"id,address /n 1, sdfsdfsdfsdfsdfsdf"
