@@ -136,7 +136,7 @@ def submit_pizza(delivery):
                 orders[id].pizza_list = [Pizza(values[1], values[2], values[3].split(":"))]
             else:
                 orders[id].pizza_list += [Pizza(values[1], values[2], values[3].split(":"))]
-        return "Pizza Request Accepted"
+        return "Pizza Request Received"
 
     if delivery == "Uber" or delivery == "PizzaP" or delivery == "Instore":
         content = request.get_json()
@@ -154,7 +154,7 @@ def submit_pizza(delivery):
                 orders[id].pizza_list = [Pizza(content["Size"], content["Type"], content["Toppings"])]
             else:
                 orders[id].pizza_list += [Pizza(content["Size"], content["Type"], content["Toppings"])]
-        return "Pizza Request Accepted"
+        return "Pizza Request Received"
     else:
         status_code = flask.Response(status=404)
         return status_code
@@ -180,7 +180,7 @@ def submit_drinks(delivery):
                 orders[id].drink_list = values[1].split(":")
             else:
                 orders[id].drink_list += values[1].split(":")
-        return "Drinks Request Accepted"
+        return "Drinks Request Received"
 
     if delivery == "Uber" or delivery == "PizzaP" or delivery == "Instore":
         content = request.get_json()
@@ -198,13 +198,13 @@ def submit_drinks(delivery):
                 orders[id].drink_list = content["Drink"]
             else:
                 orders[id].drink_list += content["Drink"]
-        return "Drinks Request Accepted"
+        return "Drinks Request Received"
 
     else:
         status_code = flask.Response(status=404)
         return status_code
 
-# Submit address
+# Submit/Update address
 @app.route('/pizza/submit_address/<delivery>', methods=['POST'])
 def submit_address(delivery):
 
@@ -224,7 +224,7 @@ def submit_address(delivery):
         else:
             orders[id].address = values[1]
 
-        return "Drinks Request Accepted"
+        return "Address Received"
 
     if delivery == "Uber" or delivery == "PizzaP" or delivery == "Instore":
         content = request.get_json()
@@ -240,7 +240,7 @@ def submit_address(delivery):
         else:
             orders[id].address = content["Address"]
 
-        return "Drinks Request Accepted"
+        return "Address Received"
 
     else:
         status_code = flask.Response(status=404)
@@ -253,7 +253,7 @@ def cancel_order(order_id):
         status_code = flask.Response(status=404)
         return status_code
     del orders[order_id]
-    return "Cancel Done"
+    return "Cancel Request Received"
 
 # Get menu
 @app.route('/pizza/get_menu/<item>', methods=['GET'])
@@ -265,6 +265,13 @@ def get_menu(item):
         return status_code
     else:
         return str(menu[item])
+
+# Update Pizza Size
+@app.route('/pizza/update_pizza_size/<order_id>/<size>', methods=['POST'])
+def get_menu(order_id, size):
+    if order_id not in orders or size not in menu:
+        status_code = flask.Response(status=404)
+        return status_code
 
 
 if __name__ == "__main__":
