@@ -34,12 +34,12 @@ def pizza_size_option(code):
 
 def pizza_topping_option(code):
     switcher = {
-        "1": "olives",
-        "2": "tomatoes",
-        "3": "mushrooms",
-        "4": "jalapenos",
-        "5": "chicken",
-        "6": "beef",
-        "7": "pepperoni"
+        "1": "Olives",
+        "2": "Tomatoes",
+        "3": "Mushrooms",
+        "4": "Jalapenos",
+        "5": "Chicken",
+        "6": "Beef",
+        "7": "Pepperoni"
     }
     return switcher.get(code, "Invalid OP")

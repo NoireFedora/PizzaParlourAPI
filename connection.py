@@ -6,6 +6,6 @@ import requests
 
 
 def send(address: str, payload: str):
-    server_code = requests.post(address, data=payload)
+    server_code = requests.post(address, data = payload)
 
     return server_code.text

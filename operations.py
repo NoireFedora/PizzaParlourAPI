@@ -45,16 +45,16 @@ def creat_order(delivery_method, Address):
         # now we have a pizza trying to send this pizza to the api and store it
         if delivery_method != "Foodora":
             order = {
-                "id": order_id,
+                "Id": order_id,
                 "Size": pizza_size,
                 "Type": pizza_type,
                 "Toppings": pizza_topping
             }
 
-            pizza_json = json.dumps(order, indent=2)
-            #server_code=connection.send('/pizza/submit_pizza/'+delivery_method,pizza_json )
+            pizza_json = json.dumps(order)
+            server_code = connection.send('http://127.0.0.1:5000/pizza/submit_pizza/'+delivery_method, pizza_json)
 
 
-            print(pizza_json)
+            print(server_code)
 
     return None
