@@ -100,7 +100,7 @@ def isvaliddrinks(drinks, format):
         temp = drinks.split("\n")
         attrs = temp[0].split(",")
         vals = temp[1].split(",")
-        if len(attrs) != 2 or len(vals) != 2:
+        if len(attrs) != 2 or len(vals) < 2:
             return False
         if "\r" in attrs[-1]:
             attrs[-1] = attrs[-1].strip("\r")
@@ -176,11 +176,11 @@ def submit_pizza(delivery):
 def submit_drinks(delivery):
 
     if delivery == "Foodora":
-        pizza = request.data.decode('utf-8')
-        if not isvaliddrinks(pizza, "csv"):
+        drink = request.data.decode('utf-8')
+        if not isvaliddrinks(drink, "csv"):
             status_code = flask.Response(status=404)
             return status_code
-        temp = pizza.split("\n")
+        temp = drink.split("\n")
         values = temp[1].split(",")
         id = values[0]
         if "[" in values[1]:
