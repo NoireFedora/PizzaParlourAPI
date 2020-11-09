@@ -10,8 +10,8 @@
 
 
 
-Id,Size,Type,Toppings,address
-11,Medium,Medium,['Olives', 'Jalapenos', 'Tomatoes']
+Id,Size,Type,Toppings
+2,Small,Small,[Olives,Tomatoes]
 
 {
    "Id"   : 1,

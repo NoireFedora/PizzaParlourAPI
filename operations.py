@@ -62,6 +62,7 @@ def creat_order(delivery_method, Address):
                 if cont != "Y":
                     break
         else:
-            order = "Id,Size,Type,Toppings,address\n"+order_id +","+pizza_size+","+pizza_size+","+str(pizza_topping)
+            new_list=','.join(pizza_topping)
+            order = "Id,Size,Type,Toppings\n"+order_id +","+pizza_size+","+pizza_size+",["+str(new_list)+"]"
             print(order)
     return None
