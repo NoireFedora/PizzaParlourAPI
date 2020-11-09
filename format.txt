@@ -8,6 +8,11 @@
 
 "Id,Size,Type,Toppings,address\n 1, Small, Neapolitan,Chicken:Beef:Mushrooms"
 
+
+
+Id,Size,Type,Toppings,address
+11,Medium,Medium,['Olives', 'Jalapenos', 'Tomatoes']
+
 {
    "Id"   : 1,
    "Drink" : ["Coke", "Pepsi"]

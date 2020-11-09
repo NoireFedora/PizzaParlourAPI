@@ -54,7 +54,14 @@ def creat_order(delivery_method, Address):
             pizza_json = json.dumps(order)
             server_code = connection.send('http://127.0.0.1:5000/pizza/submit_pizza/'+delivery_method, pizza_json)
 
-
-            print(server_code)
-
+            if server_code.status_code == 404:
+                print("smothing wrong with you pizza, please enter the pizza again")
+            else:
+                print(server_code.text)
+                cont = input("add more pizza? Y for Yes, other input for NO\n")
+                if cont != "Y":
+                    break
+        else:
+            order = "Id,Size,Type,Toppings,address\n"+order_id +","+pizza_size+","+pizza_size+","+str(pizza_topping)
+            print(order)
     return None
