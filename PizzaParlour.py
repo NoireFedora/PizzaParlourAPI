@@ -266,12 +266,21 @@ def get_menu(item):
     else:
         return str(menu[item])
 
-# Update Pizza Size
-@app.route('/pizza/update_pizza_size/<order_id>/<size>', methods=['POST'])
-def get_menu(order_id, size):
-    if order_id not in orders or size not in menu:
+# Get pizza list
+@app.route('/pizza/get_pizza_list/<order_id>', methods=['GET'])
+def get_pizza_list(order_id):
+    if order_id not in orders:
         status_code = flask.Response(status=404)
         return status_code
+    return orders[order_id].pizza_list
+
+# Get drink list
+@app.route('/pizza/get_drink_list/<order_id>', methods=['GET'])
+def get_drink_list(order_id):
+    if order_id not in orders:
+        status_code = flask.Response(status=404)
+        return status_code
+    return orders[order_id].drink_list
 
 
 if __name__ == "__main__":
