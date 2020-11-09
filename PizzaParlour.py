@@ -129,8 +129,7 @@ def submit_pizza(delivery):
     if delivery == "Foodora":
         pizza = request.data.decode('utf-8')
         if not isvalidpizza(pizza, "csv"):
-            status_code = flask.Response(status=404)
-            return status_code
+            return "Pizza Request is not valid"
         temp = pizza.split("\n")
         values = temp[1].split(",")
         id = values[0]
@@ -141,7 +140,7 @@ def submit_pizza(delivery):
         if not id in orders:
             orders[id] = Order(id)
             orders[id].pizza_list = [Pizza(values[1], values[2], values[3:])]
-            if delivery is None:
+            if orders[id].delivery is None:
                 orders[id].delivery = delivery
         else:
             if orders[id].pizza_list is None:
@@ -153,13 +152,12 @@ def submit_pizza(delivery):
     if delivery == "Uber" or delivery == "PizzaP" or delivery == "Instore":
         content = json.loads(request.data)
         if not isvalidpizza(content, "json"):
-            status_code = flask.Response(status=404)
-            return status_code
+            return "Pizza Request is not valid"
         id = content["Id"]
         if not id in orders:
             orders[id] = Order(id)
             orders[id].pizza_list = [Pizza(content["Size"], content["Type"], content["Toppings"])]
-            if delivery is None:
+            if orders[id].delivery is None:
                 orders[id].delivery = delivery
         else:
             if orders[id].pizza_list is None:
@@ -178,8 +176,7 @@ def submit_drinks(delivery):
     if delivery == "Foodora":
         drink = request.data.decode('utf-8')
         if not isvaliddrinks(drink, "csv"):
-            status_code = flask.Response(status=404)
-            return status_code
+            return "Drink Request is not valid"
         temp = drink.split("\n")
         values = temp[1].split(",")
         id = values[0]
@@ -190,7 +187,7 @@ def submit_drinks(delivery):
         if not id in orders:
             orders[id] = Order(id)
             orders[id].drink_list = values[1:]
-            if delivery is None:
+            if orders[id].delivery is None:
                 orders[id].delivery = delivery
         else:
             if orders[id].drink_list is None:
@@ -202,13 +199,12 @@ def submit_drinks(delivery):
     if delivery == "Uber" or delivery == "PizzaP" or delivery == "Instore":
         content = json.loads(request.data)
         if not isvaliddrinks(content, "json"):
-            status_code = flask.Response(status=404)
-            return status_code
+            return "Drink Request is not valid"
         id = content["Id"]
         if not id in orders:
             orders[id] = Order(id)
             orders[id].drink_list = content["Drink"]
-            if delivery is None:
+            if orders[id].delivery is None:
                 orders[id].delivery = delivery
         else:
             if orders[id].drink_list is None:
@@ -232,28 +228,26 @@ def submit_address(delivery):
         values = temp[1].split(",")
         id = values[0]
         if len(attrs) != 2 or len(values) != 2:
-            status_code = flask.Response(status=404)
-            return status_code
+            return "Address Request is not valid"
         if not id in orders:
             orders[id] = Order(id)
             orders[id].address = values[1]
-            if delivery is None:
+            if orders[id].delivery is None:
                 orders[id].delivery = delivery
         else:
             orders[id].address = values[1]
 
-        return "Address Received"
+        return "Address Request Received"
 
     if delivery == "Uber" or delivery == "PizzaP" or delivery == "Instore":
         content = json.loads(request.data)
         if "Id" not in content or "Address" not in content:
-            status_code = flask.Response(status=404)
-            return status_code
+            return "Address Request is not valid"
         id = content["Id"]
         if not id in orders:
             orders[id] = Order(id)
             orders[id].address = content["Address"]
-            if delivery is None:
+            if orders[id].delivery is None:
                 orders[id].delivery = delivery
         else:
             orders[id].address = content["Address"]
@@ -267,23 +261,20 @@ def submit_address(delivery):
 # Delete a drink
 @app.route('/pizza/delete_drink/<order_id>/<index>', methods=['DELETE'])
 def delete_drink(order_id, index):
-    if order_id not in orders:
-        status_code = flask.Response(status=404)
-        return status_code
-    drink_list = orders[order_id]
-    if index > len(drink_list) - 1:
-        status_code = flask.Response(status=404)
-        return status_code
-    del drink_list[index]
+    if int(order_id) not in orders:
+        return "Order Id does not exist"
+    drink_list = orders[int(order_id)]
+    if int(index) > len(drink_list) - 1:
+        return "Index Out Of Range"
+    del drink_list[int(index)]
     return "Drink Deleted"
 
 # Cancel an order
 @app.route('/pizza/cancel_order/<order_id>', methods=['DELETE'])
 def cancel_order(order_id):
-    if order_id not in orders:
-        status_code = flask.Response(status=404)
-        return status_code
-    del orders[order_id]
+    if int(order_id) not in orders:
+        return "Order Id does not exist"
+    del orders[int(order_id)]
     return "Cancel Request Received"
 
 # Get menu
@@ -292,45 +283,56 @@ def get_menu(item):
     if item == "FULL":
         return menu
     elif item not in menu:
-        status_code = flask.Response(status=404)
-        return status_code
+        return "Item does not exist"
     else:
         return str(menu[item])
 
 # Get pizza list
 @app.route('/pizza/get_pizza_list/<order_id>', methods=['GET'])
 def get_pizza_list(order_id):
-    if order_id not in orders:
-        status_code = flask.Response(status=404)
-        return status_code
-    return orders[order_id].pizza_list
+    if int(order_id) not in orders:
+        return "Order Id does not exist"
+    return orders[int(order_id)].pizza_list
 
 # Get drink list
 @app.route('/pizza/get_drink_list/<order_id>', methods=['GET'])
 def get_drink_list(order_id):
-    if order_id not in orders:
-        status_code = flask.Response(status=404)
-        return status_code
-    return orders[order_id].drink_list
+    if int(order_id) not in orders:
+        return "Order Id does not exist"
+    return orders[int(order_id)].drink_list
 
 # Check whether the order is valid or not
 @app.route('/pizza/check_order/<order_id>', methods=['POST'])
 def check_order(order_id):
-    if order_id not in orders:
-        status_code = flask.Response(status=404)
-        return status_code
-    order = orders[order_id]
+    if int(order_id) not in orders:
+        return "Order Id does not exist"
+    order = orders[int(order_id)]
     if order.delivery is None:
         return "No Delivery Method"
     elif order.delivery == "Instore":
-        if order.food_list is None and order.drink_list is None:
+        if order.pizza_list is None and order.drink_list is None:
             return "Nothing Ordered"
     else:
-        if order.food_list is None and order.drink_list is None:
+        if order.pizza_list is None and order.drink_list is None:
             return "Nothing Ordered"
         if order.address is None:
             return "No Address"
-    return "Order Accepted"
+    result = "Order Accepted: {}\n".format(int(order_id))
+    checkout = 0
+    count = 0
+    for pizza in order.pizza_list:
+        count += 1
+        checkout += menu[pizza.size] + menu[pizza.type]
+        result += " Pizza {}:".format(count) + "\n      Size:" + pizza.size + "\n       Type:" + pizza.type + "\n       Topping:"
+        for topping in pizza.topping:
+            checkout += menu[topping]
+            result += topping + " "
+        result += "\n"
+    result += "  Drink: "
+    for drink in order.drink_list:
+        checkout += menu[drink]
+        result += drink + " "
+    return result
 
 
 if __name__ == "__main__":

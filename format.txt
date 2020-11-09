@@ -17,9 +17,9 @@ Id,Drink
 1,[Coke,Pepsi]
 
 {
-    "id"   : 1,
-    "address" : "UofT"
+    "Id"   : 1,
+    "Address" : "UofT"
 }
 
-id,address
+Id,Address
 1,UofT
