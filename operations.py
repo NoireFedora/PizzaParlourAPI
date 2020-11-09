@@ -64,5 +64,56 @@ def creat_order(delivery_method, Address):
         else:
             new_list=','.join(pizza_topping)
             order = "Id,Size,Type,Toppings\n"+order_id +","+pizza_size+","+pizza_size+",["+str(new_list)+"]"
-            print(order)
+            server_code = connection.send('http://127.0.0.1:5000/pizza/submit_pizza/' + delivery_method, order)
+            if server_code.status_code == 404:
+                print("smothing wrong with you pizza, please enter the pizza again")
+            else:
+                print(server_code.text)
+                cont = input("add more pizza? Y for Yes, other input for NO\n")
+                if cont != "Y":
+                    break
+
+    # now ask for drink
+    cur_drink = "Invalid OP"
+    drinks = []
+    while cur_drink == "Invalid OP":
+        cur_drink = input("please Select drink \n1: Coke\n2: Diet Coke\n3: Coke_Zero\n4: Pepsi\n5: "
+                            "Diet_Pepsi\n6: "
+                            "Dr.Pepper\n7: Water\n8: Juice")
+        cur_drink = switcher.drink_option(cur_drink)
+        if drinks == "Invalid OP":
+            print("invalid input please try again\n")
+        else:
+            drinks.append(cur_drink)
+            cur_drink = "Invalid OP"
+            cont = input("add one more topping? Y for Yes, other input for NO\n")
+            if cont != "Y":
+                break
+    # now we have a pizza trying to send this pizza to the api and store it
+    if delivery_method != "Foodora":
+        order = {
+            "Id": order_id,
+            "Drink": drinks,
+        }
+
+        pizza_json = json.dumps(order)
+        print(pizza_json)
+        server_code = connection.send('http://127.0.0.1:5000/pizza/submit_drinks/'+delivery_method, pizza_json)
+
+        if server_code.status_code == 404:
+            print("smothing wrong with you drink, please enter the drink again")
+        else:
+            print(server_code.text)
+
+    else:
+        new_list=','.join(drinks)
+        order = "Id,Drink\n"+order_id + ",["+str(new_list)+"]"
+        print(order)
+        server_code = connection.send('http://127.0.0.1:5000/pizza/submit_drinks/' + delivery_method, order)
+        if server_code.status_code == 404:
+            print("smothing wrong with you drink, please enter the drink again")
+        else:
+            print(server_code.text)
+
+
     return None

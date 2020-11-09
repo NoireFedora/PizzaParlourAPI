@@ -43,3 +43,16 @@ def pizza_topping_option(code):
         "7": "Pepperoni"
     }
     return switcher.get(code, "Invalid OP")
+
+def drink_option(code):
+    switcher = {
+        "1": "Coke",
+        "2": "Diet_Coke",
+        "3": "Coke_Zero",
+        "4": "Pepsi",
+        "5": "Diet_Pepsi",
+        "6": "Dr.Pepper",
+        "7": "Water",
+        "8": "Juice"
+    }
+    return switcher.get(code, "Invalid OP")
