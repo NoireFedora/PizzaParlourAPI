@@ -9,6 +9,11 @@
 Id,Size,Type,Toppings
 1,Small,Neapolitan,[Chicken,Beef,Mushrooms]
 
+
+
+Id,Size,Type,Toppings
+2,Small,Small,[Olives,Tomatoes]
+
 {
    "Id"   : 1,
    "Drink" : ["Coke", "Pepsi"]
