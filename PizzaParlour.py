@@ -139,7 +139,7 @@ def submit_pizza(delivery):
         return "Pizza Request Received"
 
     if delivery == "Uber" or delivery == "PizzaP" or delivery == "Instore":
-        content = request.get_json()
+        content = json.loads(request.data)
         if not isvalidpizza(content, "json"):
             status_code = flask.Response(status=404)
             return status_code
@@ -183,7 +183,7 @@ def submit_drinks(delivery):
         return "Drinks Request Received"
 
     if delivery == "Uber" or delivery == "PizzaP" or delivery == "Instore":
-        content = request.get_json()
+        content = json.loads(request.data)
         if not isvaliddrinks(content, "json"):
             status_code = flask.Response(status=404)
             return status_code
@@ -227,7 +227,7 @@ def submit_address(delivery):
         return "Address Received"
 
     if delivery == "Uber" or delivery == "PizzaP" or delivery == "Instore":
-        content = request.get_json()
+        content = json.loads(request.data)
         if "Id" not in content or "Address" not in content:
             status_code = flask.Response(status=404)
             return status_code
