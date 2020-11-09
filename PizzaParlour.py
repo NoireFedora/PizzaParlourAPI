@@ -246,10 +246,23 @@ def submit_address(delivery):
         status_code = flask.Response(status=404)
         return status_code
 
+# Delete a drink
+@app.route('/pizza/delete_drink/<order_id>/<index>', methods=['DELETE'])
+def delete_drink(order_id, index):
+    if order_id not in orders:
+        status_code = flask.Response(status=404)
+        return status_code
+    drink_list = orders[order_id]
+    if index > len(drink_list) - 1:
+        status_code = flask.Response(status=404)
+        return status_code
+    del drink_list[index]
+    return "Drink Deleted"
+
 # Cancel an order
 @app.route('/pizza/cancel_order/<order_id>', methods=['DELETE'])
 def cancel_order(order_id):
-    if str(order_id) not in orders:
+    if order_id not in orders:
         status_code = flask.Response(status=404)
         return status_code
     del orders[order_id]
@@ -281,6 +294,25 @@ def get_drink_list(order_id):
         status_code = flask.Response(status=404)
         return status_code
     return orders[order_id].drink_list
+
+# Check whether the order is valid or not
+@app.route('/pizza/check_order/<order_id>', methods=['POST'])
+def check_order(order_id):
+    if order_id not in orders:
+        status_code = flask.Response(status=404)
+        return status_code
+    order = orders[order_id]
+    if order.delivery is None:
+        return "No Delivery Method"
+    elif order.delivery == "Instore":
+        if order.food_list is None and order.drink_list is None:
+            return "Nothing Ordered"
+    else:
+        if order.food_list is None and order.drink_list is None:
+            return "Nothing Ordered"
+        if order.address is None:
+            return "No Address"
+    return "Order Accepted"
 
 
 if __name__ == "__main__":

@@ -1,23 +1,23 @@
 
 {
-  "id"   : 1,
-  "Size" : 12,
+  "Id"   : 1,
+  "Size" : "Small",
   "Type" : "Neapolitan",
-  "Toppings" : ["cheese", "apple", "meat"]
+  "Toppings" : ["Chicken", "Beef", "Mushrooms"]
 }
 
-"id,Size,Type,Toppings,address\n 1, 12, Neapolitan,cheese:apple:meat,zzzzzzzzzzzzzzzzzzzzzzzzzzz"
+"Id,Size,Type,Toppings,address\n 1, Small, Neapolitan,Chicken:Beef:Mushrooms"
 
 {
-   "id"   : 1,
-    "drink" : ["coke", "sprit"]
+   "Id"   : 1,
+   "Drink" : ["Coke", "Pepsi"]
 }
 
-"id,drink /n 1, sprit: coke:water"
+"Id,Drink /n 1, Coke:Pepsi"
 
 {
     "id"   : 1,
-    "address" : "sdfsdfsdfsdfsdfsdf"
+    "address" : "UofT"
 }
 
-"id,address /n 1, sdfsdfsdfsdfsdfsdf"
+"id,address /n 1, UofT"
