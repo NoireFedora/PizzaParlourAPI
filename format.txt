@@ -6,18 +6,21 @@
   "Toppings" : ["Chicken", "Beef", "Mushrooms"]
 }
 
-"Id,Size,Type,Toppings,address\n 1, Small, Neapolitan,Chicken:Beef:Mushrooms"
+Id,Size,Type,Toppings
+1,Small,Neapolitan,[Chicken,Beef,Mushrooms]
 
 {
    "Id"   : 1,
    "Drink" : ["Coke", "Pepsi"]
 }
 
-"Id,Drink /n 1, Coke:Pepsi"
+Id,Drink
+1,[Coke,Pepsi]
 
 {
     "id"   : 1,
     "address" : "UofT"
 }
 
-"id,address /n 1, UofT"
+id,address
+1,UofT

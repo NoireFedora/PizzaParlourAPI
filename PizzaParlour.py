@@ -62,17 +62,19 @@ def isvalidpizza(pizza, format):
         temp = pizza.split("\n")
         attrs = temp[0].split(",")
         vals = temp[1].split(",")
-        if len(attrs) != 4 or len(vals) != 4:
+        if "\r" in attrs[-1]:
+            attrs[-1] = attrs[-1].strip("\r")
+        if "[" in vals[3]:
+            vals[3] = vals[3].strip("[")
+        if "]" in vals[-1]:
+            vals[-1] = vals[-1].strip("]")
+        if len(attrs) != 4 or len(vals) < 4:
             return False
         for attr in attrs:
             if attr not in pizza_attr:
                 return False
-        for val in vals[1:-1]:
+        for val in vals[1:]:
             if val not in menu:
-                return False
-        toppings = vals[-1].split(":")
-        for topping in toppings:
-            if topping not in menu:
                 return False
         return True
 
@@ -100,10 +102,15 @@ def isvaliddrinks(drinks, format):
         vals = temp[1].split(",")
         if len(attrs) != 2 or len(vals) != 2:
             return False
+        if "\r" in attrs[-1]:
+            attrs[-1] = attrs[-1].strip("\r")
+        if "[" in vals[1]:
+            vals[1] = vals[1].strip("[")
+        if "]" in vals[-1]:
+            vals[-1] = vals[-1].strip("]")
         if "Drink" not in attrs:
             return False
-        drinklist = vals[-1].split(":")
-        for drink in drinklist:
+        for drink in vals[1:]:
             if drink not in menu:
                 return False
         return True
@@ -120,22 +127,27 @@ def get_id():
 def submit_pizza(delivery):
 
     if delivery == "Foodora":
-        if not isvalidpizza(request, "csv"):
+        pizza = request.data.decode('utf-8')
+        if not isvalidpizza(pizza, "csv"):
             status_code = flask.Response(status=404)
             return status_code
-        temp = request.split("\n")
+        temp = pizza.split("\n")
         values = temp[1].split(",")
         id = values[0]
+        if "[" in values[3]:
+            values[3] = values[3].strip("[")
+        if "]" in values[-1]:
+            values[-1] = values[-1].strip("]")
         if not id in orders:
             orders[id] = Order(id)
-            orders[id].pizza_list = [Pizza(values[1], values[2], values[3].split(":"))]
+            orders[id].pizza_list = [Pizza(values[1], values[2], values[3:])]
             if delivery is None:
                 orders[id].delivery = delivery
         else:
             if orders[id].pizza_list is None:
-                orders[id].pizza_list = [Pizza(values[1], values[2], values[3].split(":"))]
+                orders[id].pizza_list = [Pizza(values[1], values[2], values[3:])]
             else:
-                orders[id].pizza_list += [Pizza(values[1], values[2], values[3].split(":"))]
+                orders[id].pizza_list += [Pizza(values[1], values[2], values[3:])]
         return "Pizza Request Received"
 
     if delivery == "Uber" or delivery == "PizzaP" or delivery == "Instore":
@@ -164,22 +176,27 @@ def submit_pizza(delivery):
 def submit_drinks(delivery):
 
     if delivery == "Foodora":
-        if not isvaliddrinks(request, "csv"):
+        pizza = request.data.decode('utf-8')
+        if not isvaliddrinks(pizza, "csv"):
             status_code = flask.Response(status=404)
             return status_code
-        temp = request.split("\n")
+        temp = pizza.split("\n")
         values = temp[1].split(",")
         id = values[0]
+        if "[" in values[1]:
+            values[1] = values[1].strip("[")
+        if "]" in values[-1]:
+            values[-1] = values[-1].strip("]")
         if not id in orders:
             orders[id] = Order(id)
-            orders[id].drink_list = values[1].split(":")
+            orders[id].drink_list = values[1:]
             if delivery is None:
                 orders[id].delivery = delivery
         else:
             if orders[id].drink_list is None:
-                orders[id].drink_list = values[1].split(":")
+                orders[id].drink_list = values[1:]
             else:
-                orders[id].drink_list += values[1].split(":")
+                orders[id].drink_list += values[1:]
         return "Drinks Request Received"
 
     if delivery == "Uber" or delivery == "PizzaP" or delivery == "Instore":
@@ -209,7 +226,8 @@ def submit_drinks(delivery):
 def submit_address(delivery):
 
     if delivery == "Foodora":
-        temp = request.split("\n")
+        pizza = request.data.decode('utf-8')
+        temp = pizza.split("\n")
         attrs = temp[0].split(",")
         values = temp[1].split(",")
         id = values[0]
