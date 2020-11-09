@@ -1,7 +1,7 @@
 import requests
 import switcher
 import json
-
+import connection
 def creat_order(delivery_method, Address):
     # first get the order number from api
     r = requests.get('http://127.0.0.1:5000/pizza/get_id')
@@ -43,14 +43,18 @@ def creat_order(delivery_method, Address):
                     break
 
         # now we have a pizza trying to send this pizza to the api and store it
-        dictionary = {
-            "id": order_id,
-            "Size": pizza_size,
-            "Type": pizza_type,
-            "Toppings": pizza_topping
-        }
+        if delivery_method != "Foodora":
+            order = {
+                "id": order_id,
+                "Size": pizza_size,
+                "Type": pizza_type,
+                "Toppings": pizza_topping
+            }
 
-        pizza_json = json.dumps(dictionary,indent=2)
-        print(pizza_json)
+            pizza_json = json.dumps(order, indent=2)
+            #server_code=connection.send('/pizza/submit_pizza/'+delivery_method,pizza_json )
+
+
+            print(pizza_json)
 
     return None
