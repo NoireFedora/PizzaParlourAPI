@@ -1,7 +1,6 @@
 import flask
 import json
-from flask import Flask, request, jsonify
-
+from flask import Flask, request
 app = Flask("Assignment 2")
 
 
@@ -132,7 +131,7 @@ def submit_pizza(delivery):
             return "Pizza Request is not valid"
         temp = pizza.split("\n")
         values = temp[1].split(",")
-        id = int(values[0])
+        id = values[0]
         if "[" in values[3]:
             values[3] = values[3].strip("[")
         if "]" in values[-1]:
@@ -153,7 +152,7 @@ def submit_pizza(delivery):
         content = json.loads(request.data)
         if not isvalidpizza(content, "json"):
             return "Pizza Request is not valid"
-        id = content["Id"]
+        id = str(content["Id"])
         if not id in orders:
             orders[id] = Order(id)
             orders[id].pizza_list = [Pizza(content["Size"], content["Type"], content["Toppings"])]
@@ -179,7 +178,7 @@ def submit_drinks(delivery):
             return "Drink Request is not valid"
         temp = drink.split("\n")
         values = temp[1].split(",")
-        id = int(values[0])
+        id = values[0]
         if "[" in values[1]:
             values[1] = values[1].strip("[")
         if "]" in values[-1]:
@@ -200,7 +199,7 @@ def submit_drinks(delivery):
         content = json.loads(request.data)
         if not isvaliddrinks(content, "json"):
             return "Drink Request is not valid"
-        id = content["Id"]
+        id = str(content["Id"])
         if not id in orders:
             orders[id] = Order(id)
             orders[id].drink_list = content["Drink"]
@@ -226,7 +225,7 @@ def submit_address(delivery):
         temp = pizza.split("\n")
         attrs = temp[0].split(",")
         values = temp[1].split(",")
-        id = int(values[0])
+        id = values[0]
         if len(attrs) != 2 or len(values) != 2:
             return "Address Request is not valid"
         if not id in orders:
@@ -243,7 +242,7 @@ def submit_address(delivery):
         content = json.loads(request.data)
         if "Id" not in content or "Address" not in content:
             return "Address Request is not valid"
-        id = content["Id"]
+        id = str(content["Id"])
         if not id in orders:
             orders[id] = Order(id)
             orders[id].address = content["Address"]
@@ -261,9 +260,9 @@ def submit_address(delivery):
 # Delete a drink
 @app.route('/pizza/delete_drink/<order_id>/<index>', methods=['DELETE'])
 def delete_drink(order_id, index):
-    if int(order_id) not in orders:
+    if order_id not in orders:
         return "Order Id does not exist"
-    drink_list = orders[int(order_id)]
+    drink_list = orders[order_id]
     if int(index) > len(drink_list) - 1:
         return "Index Out Of Range"
     del drink_list[int(index)]
@@ -272,9 +271,9 @@ def delete_drink(order_id, index):
 # Cancel an order
 @app.route('/pizza/cancel_order/<order_id>', methods=['DELETE'])
 def cancel_order(order_id):
-    if int(order_id) not in orders:
+    if order_id not in orders:
         return "Order Id does not exist"
-    del orders[int(order_id)]
+    del orders[order_id]
     return "Cancel Request Received"
 
 # Get menu
@@ -290,23 +289,23 @@ def get_menu(item):
 # Get pizza list
 @app.route('/pizza/get_pizza_list/<order_id>', methods=['GET'])
 def get_pizza_list(order_id):
-    if int(order_id) not in orders:
+    if order_id not in orders:
         return "Order Id does not exist"
-    return orders[int(order_id)].pizza_list
+    return orders[order_id].pizza_list
 
 # Get drink list
 @app.route('/pizza/get_drink_list/<order_id>', methods=['GET'])
 def get_drink_list(order_id):
-    if int(order_id) not in orders:
+    if order_id not in orders:
         return "Order Id does not exist"
-    return orders[int(order_id)].drink_list
+    return orders[order_id].drink_list
 
 # Check whether the order is valid or not
 @app.route('/pizza/check_order/<order_id>', methods=['POST'])
 def check_order(order_id):
-    if int(order_id) not in orders:
+    if order_id not in orders:
         return "Order Id does not exist"
-    order = orders[int(order_id)]
+    order = orders[order_id]
     if order.delivery is None:
         return "No Delivery Method"
     elif order.delivery == "Instore":
@@ -317,7 +316,7 @@ def check_order(order_id):
             return "Nothing Ordered"
         if order.address is None:
             return "No Address"
-    result = "Order Accepted: {}\n".format(int(order_id))
+    result = "Order Accepted: {}\n".format(order_id)
     checkout = 0
     count = 0
     for pizza in order.pizza_list:
