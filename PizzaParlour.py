@@ -132,7 +132,7 @@ def submit_pizza(delivery):
             return "Pizza Request is not valid"
         temp = pizza.split("\n")
         values = temp[1].split(",")
-        id = values[0]
+        id = int(values[0])
         if "[" in values[3]:
             values[3] = values[3].strip("[")
         if "]" in values[-1]:
@@ -179,7 +179,7 @@ def submit_drinks(delivery):
             return "Drink Request is not valid"
         temp = drink.split("\n")
         values = temp[1].split(",")
-        id = values[0]
+        id = int(values[0])
         if "[" in values[1]:
             values[1] = values[1].strip("[")
         if "]" in values[-1]:
@@ -226,7 +226,7 @@ def submit_address(delivery):
         temp = pizza.split("\n")
         attrs = temp[0].split(",")
         values = temp[1].split(",")
-        id = values[0]
+        id = int(values[0])
         if len(attrs) != 2 or len(values) != 2:
             return "Address Request is not valid"
         if not id in orders:
