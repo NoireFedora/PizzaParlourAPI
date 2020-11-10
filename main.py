@@ -21,6 +21,8 @@ def main():
         while Address == "":
             if delivery_method != "Instore":
                 Address = input("please enter you address\n")
+            else:
+                break
         # ask what does user wanna do
 
         while True:
@@ -32,6 +34,9 @@ def main():
             elif operation == "create":
                 # creat order
                 code = operations.creat_order(delivery_method, Address)
+            elif operation == "submit":
+                # submit a order
+                code = operations.submit_order(delivery_method, Address)
             elif operation == "Q":
                 break
 

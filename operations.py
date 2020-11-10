@@ -2,6 +2,8 @@ import requests
 import switcher
 import json
 import connection
+
+
 def creat_order(delivery_method, Address):
     # first get the order number from api
     r = requests.get('http://127.0.0.1:5000/pizza/get_id')
@@ -52,7 +54,7 @@ def creat_order(delivery_method, Address):
             }
 
             pizza_json = json.dumps(order)
-            server_code = connection.send('http://127.0.0.1:5000/pizza/submit_pizza/'+delivery_method, pizza_json)
+            server_code = connection.send('http://127.0.0.1:5000/pizza/submit_pizza/' + delivery_method, pizza_json)
 
             if server_code.status_code == 404:
                 print("smothing wrong with you pizza, please enter the pizza again")
@@ -62,8 +64,9 @@ def creat_order(delivery_method, Address):
                 if cont != "Y":
                     break
         else:
-            new_list=','.join(pizza_topping)
-            order = "Id,Size,Type,Toppings\n"+order_id +","+pizza_size+","+pizza_size+",["+str(new_list)+"]"
+            new_list = ','.join(pizza_topping)
+            order = "Id,Size,Type,Toppings\n" + order_id + "," + pizza_size + "," + pizza_size + ",[" + str(
+                new_list) + "]"
             server_code = connection.send('http://127.0.0.1:5000/pizza/submit_pizza/' + delivery_method, order)
             if server_code.status_code == 404:
                 print("smothing wrong with you pizza, please enter the pizza again")
@@ -78,15 +81,15 @@ def creat_order(delivery_method, Address):
     drinks = []
     while cur_drink == "Invalid OP":
         cur_drink = input("please Select drink \n1: Coke\n2: Diet Coke\n3: Coke_Zero\n4: Pepsi\n5: "
-                            "Diet_Pepsi\n6: "
-                            "Dr.Pepper\n7: Water\n8: Juice")
+                          "Diet_Pepsi\n6: "
+                          "Dr.Pepper\n7: Water\n8: Juice\n")
         cur_drink = switcher.drink_option(cur_drink)
         if drinks == "Invalid OP":
             print("invalid input please try again\n")
         else:
             drinks.append(cur_drink)
             cur_drink = "Invalid OP"
-            cont = input("add one more topping? Y for Yes, other input for NO\n")
+            cont = input("add one more drink? Y for Yes, other input for NO\n")
             if cont != "Y":
                 break
     # now we have a pizza trying to send this pizza to the api and store it
@@ -98,7 +101,7 @@ def creat_order(delivery_method, Address):
 
         pizza_json = json.dumps(order)
         print(pizza_json)
-        server_code = connection.send('http://127.0.0.1:5000/pizza/submit_drinks/'+delivery_method, pizza_json)
+        server_code = connection.send('http://127.0.0.1:5000/pizza/submit_drinks/' + delivery_method, pizza_json)
 
         if server_code.status_code == 404:
             print("smothing wrong with you drink, please enter the drink again")
@@ -106,8 +109,8 @@ def creat_order(delivery_method, Address):
             print(server_code.text)
 
     else:
-        new_list=','.join(drinks)
-        order = "Id,Drink\n"+order_id + ",["+str(new_list)+"]"
+        new_list = ','.join(drinks)
+        order = "Id,Drink\n" + order_id + ",[" + str(new_list) + "]"
         print(order)
         server_code = connection.send('http://127.0.0.1:5000/pizza/submit_drinks/' + delivery_method, order)
         if server_code.status_code == 404:
@@ -115,5 +118,27 @@ def creat_order(delivery_method, Address):
         else:
             print(server_code.text)
 
+    # print conformation text and also update the delivery address
+    if delivery_method != "Foodora":
+        address_pass = {
+            "Id": order_id,
+            "Address": Address
+        }
+    else:
+        address_pass = "Id,Address\n" + order_id + "," + Address
 
+    server_code = connection.send('http://127.0.0.1:5000/pizza/submit_address/' + delivery_method, address_pass)
+    print("your order has been created\nyour order ID is:" + order_id + "\n")
+    return None
+
+
+def submit_order(delivery_method, Address):
+    while True:
+        # first thing is to ask user for order id
+        user_order = input("please enter your order ID :\n")
+
+        # check order id
+        server_code = connection.send('http://127.0.0.1:5000/pizza/check_order/' + user_order, "")
+
+        print(server_code.text)
     return None
