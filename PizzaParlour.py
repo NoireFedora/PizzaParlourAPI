@@ -1,6 +1,7 @@
 import flask
 import json
-from flask import Flask, request
+from flask import Flask, request, jsonify
+
 app = Flask("Assignment 2")
 
 
@@ -251,7 +252,7 @@ def submit_address(delivery):
         else:
             orders[id].address = content["Address"]
 
-        return "Address Received"
+        return "Address Request Received"
 
     else:
         status_code = flask.Response(status=404)
@@ -316,18 +317,8 @@ def get_single_pizza(order_id, index):
     if int(index) > len(pizza_list) - 1:
         return "Index is not valid"
     pizza = pizza_list[int(index)]
-    result = ""
-    checkout = 0
-    count = int(index) + 1
-    checkout += menu[pizza.size] + menu[pizza.type]
-    result += "Pizza {}:".format(
-        count) + "\n      Size:" + pizza.size + "\n       Type:" + pizza.type + "\n       Topping:"
-    for topping in pizza.topping:
-        checkout += menu[topping]
-        result += topping + " "
-    result += "\n"
-    result += "Price: {}".format(checkout)
-    return result
+    json = {"size":pizza.size, "type":pizza.type, "topping":pizza.topping}
+    return jsonify(json)
 
 # Get drink list
 @app.route('/pizza/get_drink_list/<order_id>', methods=['GET'])
