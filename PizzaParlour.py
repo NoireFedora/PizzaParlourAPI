@@ -4,32 +4,42 @@ from flask import Flask, request, jsonify
 
 app = Flask("Assignment 2")
 
-
+# Start Code
 @app.route('/pizza')
 def welcome_pizza():
     return 'Welcome to Pizza Planet!'
 
 # Object Order
 class Order:
-    def __init__(self, order_id, pizza_list=None, drink_list=None, address=None, delivery=None):
+    def __init__(self, order_id:str, pizza_list:list=None, drink_list:list=None, address:str=None, delivery:str=None):
+        # The Id of this Order
         self.order_id = order_id
+        # The list contains all Pizza in this Order
         self.pizza_list = pizza_list
+        # The list contains all Drinks in this Order
         self.drink_list = drink_list
+        # Address
         self.address = address
+        # Delivery Method
         self.delivery = delivery
+        # Total Price of this Order
+        self.total = 0
 
 # Object Pizza
 class Pizza:
-    def __init__(self, size, type, topping):
+    def __init__(self, size:str, type:str, toppings:list):
+        # The Size of this Pizza
         self.size = size
+        # The Type of this Pizza
         self.type = type
-        self.topping = topping
+        # The list contains all Toppings in this Pizza
+        self.toppings = toppings
 
-# Order Id counter
+# Order Id Counter
 order_id = 0
-# List for all orders
+# The list contains all Orders
 orders = {}
-# Attributes of a pizza
+# Attributes of a Pizza
 pizza_attr = ["Id", "Size", "Type", "Toppings"]
 
 # Load menu from menu.json
@@ -39,11 +49,16 @@ with open('menu.json') as json_file:
 # Check whether a pizza request is valid or not
 def isvalidpizza(pizza, format):
 
-    # A json file (dictionary) sample:
-    #{"Id": 1,
-    #"Size": 12,
-    #"Type": "Neapolitan",
-    #"Toppings": ["cheese", "apple", "meat"]}
+    """
+    A json file (dictionary) sample:
+    {"Id": 1,
+    "Size": "Small",
+    "Type": "Neapolitan",
+    "Toppings": ["Chicken", "Beef", "Mushrooms"]}
+
+    A csv file (string) sample:
+    "Id,Size,Type,Toppings\n1,Small,Neapolitan,[Chicken,Beef,Mushrooms]"
+    """
     if format == "json":
         if len(pizza) != 4:
             return False
@@ -56,8 +71,6 @@ def isvalidpizza(pizza, format):
                 return False
         return True
 
-    # A csv file (string) sample:
-    # "Id,Size,Type,Toppings \n 1,12,Neapolitan,cheese:apple:meat"
     elif format == "csv":
         temp = pizza.split("\n")
         attrs = temp[0].split(",")
@@ -147,6 +160,9 @@ def submit_pizza(delivery):
                 orders[id].pizza_list = [Pizza(values[1], values[2], values[3:])]
             else:
                 orders[id].pizza_list += [Pizza(values[1], values[2], values[3:])]
+        orders[id].total += menu[values[1]] + menu[values[2]]
+        for topping in values[3:]:
+            orders[id].total += menu[topping]
         return "Pizza Request Received"
 
     if delivery == "Uber" or delivery == "PizzaP" or delivery == "Instore":
@@ -164,6 +180,9 @@ def submit_pizza(delivery):
                 orders[id].pizza_list = [Pizza(content["Size"], content["Type"], content["Toppings"])]
             else:
                 orders[id].pizza_list += [Pizza(content["Size"], content["Type"], content["Toppings"])]
+        orders[id].total += menu[content["Size"]] + menu[content["Type"]]
+        for topping in content["Toppings"]:
+            orders[id].total += menu[topping]
         return "Pizza Request Received"
     else:
         status_code = flask.Response(status=404)
@@ -194,6 +213,8 @@ def submit_drinks(delivery):
                 orders[id].drink_list = values[1:]
             else:
                 orders[id].drink_list += values[1:]
+        for drink in orders[id].drink_list:
+            orders[id].total += menu[drink]
         return "Drinks Request Received"
 
     if delivery == "Uber" or delivery == "PizzaP" or delivery == "Instore":
@@ -211,6 +232,8 @@ def submit_drinks(delivery):
                 orders[id].drink_list = content["Drink"]
             else:
                 orders[id].drink_list += content["Drink"]
+        for drink in orders[id].drink_list:
+            orders[id].total += menu[drink]
         return "Drinks Request Received"
 
     else:
@@ -263,9 +286,10 @@ def submit_address(delivery):
 def delete_drink(order_id, index):
     if order_id not in orders:
         return "Order Id does not exist"
-    drink_list = orders[order_id]
+    drink_list = orders[order_id].drink_list
     if int(index) > len(drink_list) - 1:
         return "Index Out Of Range"
+    orders[order_id].total -= menu[drink_list[int(index)]]
     del drink_list[int(index)]
     return "Drink Deleted"
 
@@ -301,7 +325,7 @@ def get_pizza_list(order_id):
         checkout += menu[pizza.size] + menu[pizza.type]
         result += "Pizza {}:".format(
             count) + "\n      Size:" + pizza.size + "\n       Type:" + pizza.type + "\n       Topping:"
-        for topping in pizza.topping:
+        for topping in pizza.toppings:
             checkout += menu[topping]
             result += topping + " "
         result += "\n"
@@ -317,7 +341,7 @@ def get_single_pizza(order_id, index):
     if int(index) > len(pizza_list) - 1:
         return "Index is not valid"
     pizza = pizza_list[int(index)]
-    json = {"size":pizza.size, "type":pizza.type, "topping":pizza.topping}
+    json = {"Size":pizza.size, "Type":pizza.type, "Toppings":pizza.toppings}
     return jsonify(json)
 
 # Get drink list
@@ -351,21 +375,17 @@ def check_order(order_id):
         if order.address is None:
             return "No Address"
     result = "Order Accepted: {}\n".format(order_id)
-    checkout = 0
     count = 0
     for pizza in order.pizza_list:
         count += 1
-        checkout += menu[pizza.size] + menu[pizza.type]
         result += " Pizza {}:".format(count) + "\n      Size:" + pizza.size + "\n       Type:" + pizza.type + "\n       Topping:"
-        for topping in pizza.topping:
-            checkout += menu[topping]
+        for topping in pizza.toppings:
             result += topping + " "
         result += "\n"
     result += "  Drink: "
     for drink in order.drink_list:
-        checkout += menu[drink]
         result += drink + " "
-    result += "\n" + "Total Price: {}".format(checkout)
+    result += "\n" + "Total Price: {}".format(order.total)
     return result
 
 
