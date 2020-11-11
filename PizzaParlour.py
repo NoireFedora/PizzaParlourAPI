@@ -331,6 +331,7 @@ def check_order(order_id):
     for drink in order.drink_list:
         checkout += menu[drink]
         result += drink + " "
+    result += "\n" + "Total Price: {}".format(checkout)
     return result
 
 
