@@ -291,14 +291,57 @@ def get_menu(item):
 def get_pizza_list(order_id):
     if order_id not in orders:
         return "Order Id does not exist"
-    return orders[order_id].pizza_list
+    order = orders[order_id]
+    result = ""
+    count = 0
+    for pizza in order.pizza_list:
+        checkout = 0
+        count += 1
+        checkout += menu[pizza.size] + menu[pizza.type]
+        result += "Pizza {}:".format(
+            count) + "\n      Size:" + pizza.size + "\n       Type:" + pizza.type + "\n       Topping:"
+        for topping in pizza.topping:
+            checkout += menu[topping]
+            result += topping + " "
+        result += "\n"
+        result += "Price: {}".format(checkout)
+    return result
+
+# Get single pizza
+@app.route('/pizza/get_single_pizza/<order_id>/<index>', methods=['GET'])
+def get_single_pizza(order_id, index):
+    if order_id not in orders:
+        return "Order Id does not exist"
+    pizza_list = orders[order_id].pizza_list
+    if int(index) > len(pizza_list) - 1:
+        return "Index is not valid"
+    pizza = pizza_list[int(index)]
+    result = ""
+    checkout = 0
+    count = int(index) + 1
+    checkout += menu[pizza.size] + menu[pizza.type]
+    result += "Pizza {}:".format(
+        count) + "\n      Size:" + pizza.size + "\n       Type:" + pizza.type + "\n       Topping:"
+    for topping in pizza.topping:
+        checkout += menu[topping]
+        result += topping + " "
+    result += "\n"
+    result += "Price: {}".format(checkout)
+    return result
 
 # Get drink list
 @app.route('/pizza/get_drink_list/<order_id>', methods=['GET'])
 def get_drink_list(order_id):
     if order_id not in orders:
         return "Order Id does not exist"
-    return orders[order_id].drink_list
+    order = orders[order_id]
+    result = "Drink: "
+    checkout = 0
+    for drink in order.drink_list:
+        checkout += menu[drink]
+        result += drink + " "
+    result += "\n" + "Total Price: {}".format(checkout)
+    return result
 
 # Check whether the order is valid or not
 @app.route('/pizza/check_order/<order_id>', methods=['POST'])
