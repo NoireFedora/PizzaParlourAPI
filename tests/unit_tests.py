@@ -1,7 +1,5 @@
 import json
 
-from flask import jsonify
-
 from PizzaParlour import app
 
 def test_pizza():
@@ -12,6 +10,20 @@ def test_pizza():
 
 with open('menu.json') as json_file:
     menu = json.load(json_file)
+
+valid_pizza_csv      = "Id,Size,Type,Toppings\n1,Small,Neapolitan,[Chicken,Beef,Mushrooms]"
+valid_pizza_json     = {"Id": 1, "Size": "Small", "Type": "Neapolitan", "Toppings": ["Chicken", "Beef", "Mushrooms"]}
+valid_drinks_csv     = "Id,Drink\n1,[Coke,Pepsi]"
+valid_drinks_json    = {"Id": 1, "Drink":["Coke", "Pepsi"]}
+valid_address_csv    = "Id,Drink\n1,UofT"
+valid_address_json   = {"Id": 1, "Address":"UofT"}
+
+invalid_pizza_csv    = "Id,Size,Type,Toppings\n1,Small,Neapolitan,[Chicken,Beef,Ramen]"
+invalid_pizza_json   = {"Id": 1, "Size": "Small", "Type": "Neapolitan", "Toppings": ["Chicken", "Beef", "Ramen"]}
+invalid_drinks_csv   = "Id,Drink\n1,[Coke,Milk]"
+invalid_drinks_json  = {"Id": 1, "Drink":["Coke", "Milk"]}
+invalid_address_csv  = "Address\nUofT"
+invalid_address_json = {"Address":"UofT"}
 
 def test_get_id():
     response = app.test_client().get('/pizza/get_id')
@@ -25,40 +37,71 @@ def test_get_id():
     assert response.data == b'3'
 
 def test_submit_pizza_csv():
-    csv = "Id,Size,Type,Toppings\n1,Small,Neapolitan,[Chicken,Beef,Mushrooms]"
-    response = app.test_client().post('/pizza/submit_pizza/Foodora', data=csv)
+    # Valid
+    response = app.test_client().post('/pizza/submit_pizza/Foodora', data=valid_pizza_csv)
     assert response.status_code == 200
     assert response.data == b'Pizza Request Received'
+    # Invalid
+    response = app.test_client().post('/pizza/submit_pizza/Foodora', data=invalid_pizza_csv)
+    assert response.status_code == 200
+    assert response.data == b'Pizza Request is not valid'
 
 def test_submit_pizza_json():
-    json = {"Id": 1, "Size": "Small", "Type": "Neapolitan", "Toppings": ["Chicken", "Beef", "Mushrooms"]}
-    response = app.test_client().post('/pizza/submit_pizza/Uber', json=json)
+    # Valid
+    response = app.test_client().post('/pizza/submit_pizza/Uber', json=valid_pizza_json)
     assert response.status_code == 200
     assert response.data == b'Pizza Request Received'
+    # Invalid
+    response = app.test_client().post('/pizza/submit_pizza/Uber', json=invalid_pizza_json)
+    assert response.status_code == 200
+    assert response.data == b'Pizza Request is not valid'
 
 def test_submit_drinks_csv():
-    csv = "Id,Drink\n1,[Coke,Pepsi]"
-    response = app.test_client().post('/pizza/submit_drinks/Foodora', data=csv)
+    # Valid
+    response = app.test_client().post('/pizza/submit_drinks/Foodora', data=valid_drinks_csv)
     assert response.status_code == 200
     assert response.data == b'Drinks Request Received'
+    # Invalid
+    response = app.test_client().post('/pizza/submit_drinks/Foodora', data=invalid_drinks_csv)
+    assert response.status_code == 200
+    assert response.data == b'Drink Request is not valid'
 
 def test_submit_drinks_json():
-    json = {"Id": 1, "Drink":["Coke", "Pepsi"]}
-    response = app.test_client().post('/pizza/submit_drinks/Uber', json=json)
+    # Valid
+    response = app.test_client().post('/pizza/submit_drinks/Uber', json=valid_drinks_json)
     assert response.status_code == 200
     assert response.data == b'Drinks Request Received'
+    # Invalid
+    response = app.test_client().post('/pizza/submit_drinks/Uber', json=invalid_drinks_json)
+    assert response.status_code == 200
+    assert response.data == b'Drink Request is not valid'
 
 def test_submit_address_csv():
-    csv = "Id,Drink\n1,UofT"
-    response = app.test_client().post('/pizza/submit_address/Foodora', data=csv)
+    # Valid
+    response = app.test_client().post('/pizza/submit_address/Foodora', data=valid_address_csv)
     assert response.status_code == 200
     assert response.data == b'Address Request Received'
+    # Invalid
+    response = app.test_client().post('/pizza/submit_address/Foodora', data=invalid_address_csv)
+    assert response.status_code == 200
+    assert response.data == b'Address Request is not valid'
 
 def test_submit_address_json():
-    json = {"Id": 1, "Address":"UofT"}
-    response = app.test_client().post('/pizza/submit_address/Uber', json=json)
+    # Valid
+    response = app.test_client().post('/pizza/submit_address/Uber', json=valid_address_json)
     assert response.status_code == 200
     assert response.data == b'Address Request Received'
+    # Invalid
+    response = app.test_client().post('/pizza/submit_address/Uber', json=invalid_address_json)
+    assert response.status_code == 200
+    assert response.data == b'Address Request is not valid'
+
+def test_pop_single_pizza():
+    sample = {"Id": 1, "Size": "Small", "Type": "Neapolitan", "Toppings": ["Chicken", "Beef", "Mushrooms"]}
+    result = {"Size": "Small", "Type": "Neapolitan", "Toppings": ["Chicken", "Beef", "Mushrooms"]}
+    app.test_client().post('/pizza/submit_pizza/Uber', json=sample)
+    response = app.test_client().get('/pizza/pop_single_pizza/1/0')
+    assert json.loads(response.data) == result
 
 def test_delete_drink():
     json = {"Id": 1, "Drink": ["Coke", "Pepsi"]}
@@ -85,10 +128,7 @@ def test_get_menu():
     assert response_invalid.status_code == 200
     assert response_invalid.data == b"Item does not exist"
 
-def test_pop_single_pizza():
-    sample = {"Id": 1, "Size": "Small", "Type": "Neapolitan", "Toppings": ["Chicken", "Beef", "Mushrooms"]}
-    result = {"Size": "Small", "Type": "Neapolitan", "Toppings": ["Chicken", "Beef", "Mushrooms"]}
-    app.test_client().post('/pizza/submit_pizza/Uber', json=sample)
-    response = app.test_client().get('/pizza/pop_single_pizza/1/0')
-    assert json.loads(response.data) == result
+def test_add_menu():
+    response = app.test_client().post('/pizza/add_menu/Fungi/5')
+    assert response.data == b'Type:Fungi(5) is added to menu'
 

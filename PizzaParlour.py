@@ -304,7 +304,7 @@ def delete_drink(order_id, index):
         return "Order Id does not exist"
     drink_list = orders[order_id].drink_list
     if int(index) > len(drink_list) - 1:
-        return "Index Out Of Range"
+        return "Index is not valid"
     orders[order_id].total -= menu[drink_list[int(index)]]
     del drink_list[int(index)]
     return "Drink Deleted"
@@ -393,6 +393,13 @@ def check_order(order_id):
     result += "\n" + "Total Price: {}".format(order.total)
     return result
 
+# Add a new Pizza Type into Menu
+@app.route('/pizza/add_menu/<type>/<price>', methods=['POST'])
+def add_menu(type, price):
+    menu[type] = int(price)
+    with open('menu.json', "w") as json_file:
+        json.dump(menu, json_file)
+    return "Type:{}({}) is added to menu".format(type, price)
 
 if __name__ == "__main__":
     app.run()
