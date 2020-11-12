@@ -294,6 +294,9 @@ def pop_single_pizza(order_id, index):
         return "Index is not valid"
     pizza = pizza_list[int(index)]
     json_file = {"Size":pizza.size, "Type":pizza.type, "Toppings":pizza.toppings}
+    orders[order_id].total -= menu[pizza.size] + menu[pizza.type]
+    for topping in pizza.toppings:
+        orders[order_id].total -= menu[topping]
     del pizza
     return jsonify(json_file)
 
@@ -305,8 +308,9 @@ def delete_drink(order_id, index):
     drink_list = orders[order_id].drink_list
     if int(index) > len(drink_list) - 1:
         return "Index is not valid"
-    orders[order_id].total -= menu[drink_list[int(index)]]
-    del drink_list[int(index)]
+    drink = drink_list[int(index)]
+    orders[order_id].total -= menu[drink]
+    del drink
     return "Drink Deleted"
 
 # Cancel an Order
@@ -340,7 +344,7 @@ def get_pizza_list(order_id):
         count += 1
         checkout += menu[pizza.size] + menu[pizza.type]
         result += "Pizza {}:".format(
-            count) + "\n    Size:" + pizza.size + "\n   Type:" + pizza.type + "\n   Topping:"
+            count) + "\n    Size: " + pizza.size + "\n   Type: " + pizza.type + "\n   Toppings: "
         for topping in pizza.toppings:
             checkout += menu[topping]
             result += topping + " "
@@ -370,20 +374,17 @@ def check_order(order_id):
     order = orders[order_id]
     if order.delivery is None:
         return "No Delivery Method"
-    elif order.delivery == "Instore":
-        if order.pizza_list is None and order.drink_list is None:
-            return "Nothing Ordered"
-    else:
-        if order.pizza_list is None and order.drink_list is None:
-            return "Nothing Ordered"
+    if order.pizza_list is None and order.drink_list is None:
+        return "Nothing Ordered"
+    if order.delivery != "Instore":
         if order.address is None:
             return "No Address"
     order.submitted = True
-    result = "Order Submitted: {}\n".format(order_id)
+    result = "Order {} Submitted\n".format(order_id)
     count = 0
     for pizza in order.pizza_list:
         count += 1
-        result += " Pizza {}:".format(count) + "\n      Size:" + pizza.size + "\n       Type:" + pizza.type + "\n       Topping:"
+        result += " Pizza {}:".format(count) + "\n      Size: " + pizza.size + "\n       Type: " + pizza.type + "\n       Topping: "
         for topping in pizza.toppings:
             result += topping + " "
         result += "\n"
@@ -393,7 +394,7 @@ def check_order(order_id):
     result += "\n" + "Total Price: {}".format(order.total)
     return result
 
-# Add a new Pizza Type into Menu
+# Add a new Pizza Type with Price into Menu. Cover if exist.
 @app.route('/pizza/add_menu/<type>/<price>', methods=['POST'])
 def add_menu(type, price):
     menu[type] = int(price)
