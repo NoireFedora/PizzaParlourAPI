@@ -24,6 +24,8 @@ class Order:
         self.delivery = delivery
         # Total Price of this Order
         self.total = 0
+        # Whether this Order is submitted or not. If not, it is a temporary Order.
+        self.submitted = False
 
 # Object Pizza
 class Pizza:
@@ -75,14 +77,14 @@ def isvalidpizza(pizza, format):
         temp = pizza.split("\n")
         attrs = temp[0].split(",")
         vals = temp[1].split(",")
+        if len(attrs) != 4 or len(vals) < 4:
+            return False
         if "\r" in attrs[-1]:
             attrs[-1] = attrs[-1].strip("\r")
         if "[" in vals[3]:
             vals[3] = vals[3].strip("[")
         if "]" in vals[-1]:
             vals[-1] = vals[-1].strip("]")
-        if len(attrs) != 4 or len(vals) < 4:
-            return False
         for attr in attrs:
             if attr not in pizza_attr:
                 return False
@@ -96,7 +98,7 @@ def isvaliddrinks(drinks, format):
 
     # A json file (dictionary) sample:
     # {"Id": 1,
-    #  "Drink": ["coke", "spirit"]}
+    #  "Drink": ["Coke", "Pepsi"]}
     if format == "json":
         if len(drinks) != 2:
             return False
@@ -108,7 +110,7 @@ def isvaliddrinks(drinks, format):
         return True
 
     # A csv file (string) sample:
-    # "Id,Drink /n 1,spirit:coke:water"
+    # "Id,Drink\n1,[Coke,Pepsi]"
     elif format == "csv":
         temp = drinks.split("\n")
         attrs = temp[0].split(",")
@@ -128,14 +130,14 @@ def isvaliddrinks(drinks, format):
                 return False
         return True
 
-# Return an order id
+# Return an Order Id
 @app.route('/pizza/get_id', methods=['GET'])
 def get_id():
     global order_id
     order_id += 1
     return str(order_id)
 
-# Submit a pizza request
+# Submit a Pizza to a temporary Order (Create if not exist, Add if exist)
 @app.route('/pizza/submit_pizza/<delivery>', methods=['POST'])
 def submit_pizza(delivery):
 
@@ -184,11 +186,12 @@ def submit_pizza(delivery):
         for topping in content["Toppings"]:
             orders[id].total += menu[topping]
         return "Pizza Request Received"
+
     else:
         status_code = flask.Response(status=404)
         return status_code
 
-# Submit drinks request
+# Submit Drinks to a temporary Order (Create if not exist, Add if exist)
 @app.route('/pizza/submit_drinks/<delivery>', methods=['POST'])
 def submit_drinks(delivery):
 
@@ -240,7 +243,7 @@ def submit_drinks(delivery):
         status_code = flask.Response(status=404)
         return status_code
 
-# Submit/Update address
+# Submit an Address to a temporary Order (Create if not exist, Cover if exist)
 @app.route('/pizza/submit_address/<delivery>', methods=['POST'])
 def submit_address(delivery):
 
@@ -281,6 +284,19 @@ def submit_address(delivery):
         status_code = flask.Response(status=404)
         return status_code
 
+# Pop a target Pizza
+@app.route('/pizza/pop_single_pizza/<order_id>/<index>', methods=['GET', 'Delete'])
+def pop_single_pizza(order_id, index):
+    if order_id not in orders:
+        return "Order Id does not exist"
+    pizza_list = orders[order_id].pizza_list
+    if int(index) > len(pizza_list) - 1:
+        return "Index is not valid"
+    pizza = pizza_list[int(index)]
+    json_file = {"Size":pizza.size, "Type":pizza.type, "Toppings":pizza.toppings}
+    del pizza
+    return jsonify(json_file)
+
 # Delete a drink
 @app.route('/pizza/delete_drink/<order_id>/<index>', methods=['DELETE'])
 def delete_drink(order_id, index):
@@ -293,7 +309,7 @@ def delete_drink(order_id, index):
     del drink_list[int(index)]
     return "Drink Deleted"
 
-# Cancel an order
+# Cancel an Order
 @app.route('/pizza/cancel_order/<order_id>', methods=['DELETE'])
 def cancel_order(order_id):
     if order_id not in orders:
@@ -301,7 +317,7 @@ def cancel_order(order_id):
     del orders[order_id]
     return "Cancel Request Received"
 
-# Get menu
+# Get Menu
 @app.route('/pizza/get_menu/<item>', methods=['GET'])
 def get_menu(item):
     if item == "FULL":
@@ -311,7 +327,7 @@ def get_menu(item):
     else:
         return str(menu[item])
 
-# Get pizza list
+# Get a string contains all Pizza in target Order
 @app.route('/pizza/get_pizza_list/<order_id>', methods=['GET'])
 def get_pizza_list(order_id):
     if order_id not in orders:
@@ -324,7 +340,7 @@ def get_pizza_list(order_id):
         count += 1
         checkout += menu[pizza.size] + menu[pizza.type]
         result += "Pizza {}:".format(
-            count) + "\n      Size:" + pizza.size + "\n       Type:" + pizza.type + "\n       Topping:"
+            count) + "\n    Size:" + pizza.size + "\n   Type:" + pizza.type + "\n   Topping:"
         for topping in pizza.toppings:
             checkout += menu[topping]
             result += topping + " "
@@ -332,19 +348,7 @@ def get_pizza_list(order_id):
         result += "Price: {}".format(checkout)
     return result
 
-# Get single pizza
-@app.route('/pizza/get_single_pizza/<order_id>/<index>', methods=['GET'])
-def get_single_pizza(order_id, index):
-    if order_id not in orders:
-        return "Order Id does not exist"
-    pizza_list = orders[order_id].pizza_list
-    if int(index) > len(pizza_list) - 1:
-        return "Index is not valid"
-    pizza = pizza_list[int(index)]
-    json = {"Size":pizza.size, "Type":pizza.type, "Toppings":pizza.toppings}
-    return jsonify(json)
-
-# Get drink list
+# Get a string contains all Drinks in target Order
 @app.route('/pizza/get_drink_list/<order_id>', methods=['GET'])
 def get_drink_list(order_id):
     if order_id not in orders:
@@ -358,7 +362,7 @@ def get_drink_list(order_id):
     result += "\n" + "Total Price: {}".format(checkout)
     return result
 
-# Check whether the order is valid or not
+# Check whether the Order is valid or not. If valid, then submit and return a string with all information of this Order.
 @app.route('/pizza/check_order/<order_id>', methods=['POST'])
 def check_order(order_id):
     if order_id not in orders:
@@ -374,7 +378,8 @@ def check_order(order_id):
             return "Nothing Ordered"
         if order.address is None:
             return "No Address"
-    result = "Order Accepted: {}\n".format(order_id)
+    order.submitted = True
+    result = "Order Submitted: {}\n".format(order_id)
     count = 0
     for pizza in order.pizza_list:
         count += 1
@@ -382,7 +387,7 @@ def check_order(order_id):
         for topping in pizza.toppings:
             result += topping + " "
         result += "\n"
-    result += "  Drink: "
+    result += " Drink: "
     for drink in order.drink_list:
         result += drink + " "
     result += "\n" + "Total Price: {}".format(order.total)

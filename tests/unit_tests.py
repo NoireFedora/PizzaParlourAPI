@@ -85,10 +85,10 @@ def test_get_menu():
     assert response_invalid.status_code == 200
     assert response_invalid.data == b"Item does not exist"
 
-def test_get_single_pizza():
+def test_pop_single_pizza():
     sample = {"Id": 1, "Size": "Small", "Type": "Neapolitan", "Toppings": ["Chicken", "Beef", "Mushrooms"]}
     result = {"Size": "Small", "Type": "Neapolitan", "Toppings": ["Chicken", "Beef", "Mushrooms"]}
     app.test_client().post('/pizza/submit_pizza/Uber', json=sample)
-    response = app.test_client().get('/pizza/get_single_pizza/1/0')
+    response = app.test_client().get('/pizza/pop_single_pizza/1/0')
     assert json.loads(response.data) == result
 
