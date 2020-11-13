@@ -36,7 +36,16 @@ def main():
                 code = operations.creat_order(delivery_method, Address)
             elif operation == "submit":
                 # submit a order
-                code = operations.submit_order(delivery_method, Address)
+                code = operations.submit_order()
+            elif operation == "cancel":
+                # cancel a order
+                code = operations.cancel_order()
+            elif operation == "menu":
+                # cancel a order
+                code = operations.pull_menu()
+            elif operation == "edit":
+                # cancel a order
+                code = operations.edit_order(delivery_method, Address)
             elif operation == "Q":
                 break
 
