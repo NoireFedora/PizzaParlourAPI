@@ -100,7 +100,7 @@ def creat_order(delivery_method, Address):
         }
 
         pizza_json = json.dumps(order)
-        print(pizza_json)
+        # print(pizza_json)
         server_code = connection.post('http://127.0.0.1:5000/pizza/submit_drinks/' + delivery_method, pizza_json)
 
         if server_code.status_code == 404:
@@ -130,7 +130,7 @@ def creat_order(delivery_method, Address):
         address_pass = "Id,Address\n" + order_id + "," + Address
         server_code = connection.post('http://127.0.0.1:5000/pizza/submit_address/' + delivery_method, address_pass)
 
-    print(server_code)
+    print(server_code.text)
     print("your order has been created\nyour order ID is:" + order_id + "\n")
     return None
 
@@ -182,33 +182,144 @@ def edit_order(delivery_method, Address):
     if server_code.text != "Order Id does not exist":
         while True:
             print(server_code.text)
-            # ask user which pizza you wanna change
-            change_input = input("which pizza do you wanna change? enter pizza number, S for skip this session\n")
+            # ask if user wanna add pizza delete pizza or edit pizza
+            user_decision = input("do you want edit your pizza? A for add, D for delete, E for edit, other for skip")
+            if user_decision == "E":
+                # ask user which pizza you wanna change
+                change_input = input("which pizza do you wanna change? enter pizza number, S for skip this session\n")
 
-            if change_input == "S":
-                # no change any more for this session
-                break
-            else:
-                # try to get the target pizza
-                change_input = int(change_input) - 1
-                target_pizza = connection.get(
-                    'http://127.0.0.1:5000/pizza/get_single_pizza/' + user_order + "/" + str(change_input), "")
-                pizza_json = json.loads(target_pizza.text)
-                size = pizza_json['size']
-                topping = pizza_json['topping']
-                ptype = pizza_json['type']
-                # ask if they want to edit pizza size
-                user_decision = input(
-                    "please select a new pizza size, \n1: Small\n2: Medium\n3: Large\n4: Extra_large\nother: skip\n")
-                new_size = switcher.pizza_size_option(user_decision)
-                if new_size != "Invalid OP":
-                    # switch the new size and the old size
-                    print("new size stored")
+                if change_input == "S":
+                    # no change any more for this session
+                    break
                 else:
-                    new_size=size
-                # ask if they want to edit the pizza topping
-                user_decision = input("do you want to change you pizza topping? Y for yes other for skip")
-                if user_decision == "Y":
+                    # try to get the target pizza
+                    change_input = int(change_input) - 1
+                    target_pizza = connection.get(
+                        'http://127.0.0.1:5000/pizza/pop_single_pizza/' + user_order + "/" + str(change_input), "")
+                    pizza_json = json.loads(target_pizza.text)
+                    # print(target_pizza.text)
+                    size = pizza_json['Size']
+                    topping = pizza_json['Toppings']
+                    ptype = pizza_json['Type']
+                    # ask if they want to edit pizza size
+                    user_decision = input(
+                        "please select a new pizza size, \n1: Small\n2: Medium\n3: Large\n4: Extra_large\nother: skip\n")
+                    new_size = switcher.pizza_size_option(user_decision)
+                    if new_size != "Invalid OP":
+                        # switch the new size and the old size
+                        print("new size stored")
+                    else:
+                        new_size=size
+                    # ask if they want to edit the pizza topping
+                    user_decision = input("do you want to change you pizza topping? Y for yes other for skip")
+                    if user_decision == "Y":
+                        # ask user for pizza Topping
+                        cur_topping = "Invalid OP"
+                        pizza_topping = []
+                        while cur_topping == "Invalid OP":
+                            cur_topping = input(
+                                "please Select pizza topping\n1: olives\n2: tomatoes\n3: mushrooms\n4: jalapenos\n5: "
+                                "chicken\n6: "
+                                "beef\n7: pepperoni\n")
+                            cur_topping = switcher.pizza_topping_option(cur_topping)
+                            if pizza_topping == "Invalid OP":
+                                print("invalid input please try again\n")
+                            else:
+                                pizza_topping.append(cur_topping)
+                                cur_topping = "Invalid OP"
+                                cont = input("add one more topping? Y for Yes, other input for NO\n")
+                                if cont != "Y":
+                                    break
+
+                        # replace the old topping with the new topping
+                        print("new topping saved")
+                    else:
+                        pizza_topping = topping
+                    # ask if user wanna change pizza type
+                    new_pizza_type = ""
+                    user_decision = input("do you want change your pizza type? Y for yes other for skip\n")
+                    if user_decision == "Y":
+                        new_pizza_type = ""
+                        while new_pizza_type == "":
+                            new_pizza_type = input("please enter pizza type\n")
+                            if new_pizza_type == "":
+                                print("you need to select one type\n")
+                    else:
+                        new_pizza_type=ptype
+                    # here we convert this pizza into json/csv and try to send to backend, if backend return not valid we send
+                    # the original pizza back and tell user it is not working
+                    # now we have a pizza trying to send this pizza to the api and store it
+                    if delivery_method != "Foodora":
+                        order = {
+                            "Id": user_order,
+                            "Size": new_size,
+                            "Type": new_pizza_type,
+                            "Toppings": pizza_topping
+                        }
+
+                        new_pizza_json = json.dumps(order)
+                        server_code = connection.post('http://127.0.0.1:5000/pizza/submit_pizza/' + delivery_method,
+                                                      new_pizza_json)
+
+                        if server_code.text != "Pizza Request Received":
+                            # invalid input we wanna put back the original pizza
+                            print("something wrong with you order and the pizza unchanged")
+                            order = {
+                                "Id": user_order,
+                                "Size": size,
+                                "Type": ptype,
+                                "Toppings": topping
+                            }
+                            new_pizza_json = json.dumps(order)
+                            server_code = connection.post('http://127.0.0.1:5000/pizza/submit_pizza/' + delivery_method,
+                                                          new_pizza_json)
+                        else:
+                            # ask user if wanna edit more pizza?
+                            cont = input("Edit more pizza? Y for Yes, other input for NO\n")
+                            if cont != "Y":
+                                # print(server_code.text)
+                                break
+                    else:
+                        # csv format
+                        new_list = ','.join(pizza_topping)
+                        order = "Id,Size,Type,Toppings\n" + user_order + "," + new_size + "," + new_pizza_type + ",[" + str(
+                            new_list) + "]"
+                        server_code = connection.post('http://127.0.0.1:5000/pizza/submit_pizza/' + delivery_method,
+                                                      order)
+                        if server_code.text != "Pizza Request Received":
+                            # invalid input we wanna put back the original pizza
+                            print("something wrong with you order and the pizza unchanged")
+                            new_list = ','.join(topping)
+                            order = "Id,Size,Type,Toppings\n" + user_order + "," + size + "," + ptype + ",[" + str(
+                                new_list) + "]"
+                            server_code = connection.post('http://127.0.0.1:5000/pizza/submit_pizza/' + delivery_method,
+                                                          order)
+
+                        else:
+                            # ask user if wanna edit more pizza?
+                            cont = input("Edit more pizza? Y for Yes, other input for NO\n")
+                            if cont != "Y":
+                                # print(server_code.text)
+                                break
+            elif user_decision == "A":
+                # user want to add a pizza to list
+                while True:
+
+                    # ask user to select pizza size
+                    pizza_size = "Invalid OP"
+                    while pizza_size == "Invalid OP":
+                        pizza_size = input("please Select pizza size\n1: Small\n2: Medium\n3: Large\n4: Extra_large\n")
+                        pizza_size = switcher.pizza_size_option(pizza_size)
+                        if pizza_size == "Invalid OP":
+                            print("invalid input please try again\n")
+
+                    # ask user for pizza type
+                    pizza_type = ""
+                    while pizza_type == "":
+                        pizza_type = input("please enter pizza type\n")
+                        if pizza_type == "":
+                            print("you need to select one type\n")
+
                     # ask user for pizza Topping
                     cur_topping = "Invalid OP"
                     pizza_topping = []
@@ -227,77 +338,61 @@ def edit_order(delivery_method, Address):
                             if cont != "Y":
                                 break
 
-                    # replace the old topping with the new topping
-                    print("new topping saved")
-                else:
-                    pizza_topping = topping
-                # ask if user wanna change pizza type
-                new_pizza_type = ""
-                user_decision = input("do you want change your pizza type? Y for yes other for skip\n")
-                if user_decision == "Y":
-                    new_pizza_type = ""
-                    while new_pizza_type == "":
-                        new_pizza_type = input("please enter pizza type\n")
-                        if new_pizza_type == "":
-                            print("you need to select one type\n")
-                else:
-                    new_pizza_type=ptype
-                # here we convert this pizza into json/csv and try to send to backend, if backend return not valid we send
-                # the original pizza back and tell user it is not working
-                # now we have a pizza trying to send this pizza to the api and store it
-                if delivery_method != "Foodora":
-                    order = {
-                        "Id": user_order,
-                        "Size": new_size,
-                        "Type": new_pizza_type,
-                        "Toppings": pizza_topping
-                    }
-
-                    new_pizza_json = json.dumps(order)
-                    server_code = connection.post('http://127.0.0.1:5000/pizza/submit_pizza/' + delivery_method,
-                                                  new_pizza_json)
-
-                    if server_code.text != "Pizza Request Received":
-                        # invalid input we wanna put back the original pizza
-                        print("something wrong with you order and the pizza unchanged")
+                    # now we have a pizza trying to send this pizza to the api and store it
+                    if delivery_method != "Foodora":
                         order = {
                             "Id": user_order,
-                            "Size": size,
-                            "Type": ptype,
-                            "Toppings": topping
+                            "Size": pizza_size,
+                            "Type": pizza_type,
+                            "Toppings": pizza_topping
                         }
-                        new_pizza_json = json.dumps(order)
+
+                        pizza_json = json.dumps(order)
                         server_code = connection.post('http://127.0.0.1:5000/pizza/submit_pizza/' + delivery_method,
-                                                      new_pizza_json)
+                                                      pizza_json)
+
+                        if server_code.status_code == 404:
+                            print("smothing wrong with you pizza, please enter the pizza again")
+                        else:
+                            print(server_code.text)
+                            cont = input("add more pizza? Y for Yes, other input for NO\n")
+                            if cont != "Y":
+                                break
                     else:
-                        # ask user if wanna edit more pizza?
-                        cont = input("Edit more pizza? Y for Yes, other input for NO\n")
-                        if cont != "Y":
-                            # print(server_code.text)
-                            break
-                else:
-                    # csv format
-                    new_list = ','.join(pizza_topping)
-                    order = "Id,Size,Type,Toppings\n" + user_order + "," + new_size + "," + new_pizza_type + ",[" + str(
-                        new_list) + "]"
-                    server_code = connection.post('http://127.0.0.1:5000/pizza/submit_pizza/' + delivery_method,
-                                                  order)
-                    if server_code.text != "Pizza Request Received":
-                        # invalid input we wanna put back the original pizza
-                        print("something wrong with you order and the pizza unchanged")
-                        new_list = ','.join(topping)
-                        order = "Id,Size,Type,Toppings\n" + user_order + "," + size + "," + ptype + ",[" + str(
+                        new_list = ','.join(pizza_topping)
+                        order = "Id,Size,Type,Toppings\n" + user_order + "," + pizza_size + "," + pizza_type + ",[" + str(
                             new_list) + "]"
                         server_code = connection.post('http://127.0.0.1:5000/pizza/submit_pizza/' + delivery_method,
                                                       order)
+                        if server_code.status_code == 404:
+                            print("smothing wrong with you pizza, please enter the pizza again")
+                        else:
+                            print(server_code.text)
+                            cont = input("add more pizza? Y for Yes, other input for NO\n")
+                            if cont != "Y":
+                                break
+            elif user_decision == "D":
+                # user wants to delete pizza
+                # all we need to do is to get the pizza
+                # ask user which pizza you wanna change
+                change_input = input("which pizza do you wanna Delete? enter pizza number, S for skip this session\n")
 
+                if change_input == "S":
+                    # no change any more for this session
+                    break
+                else:
+                    # pop the target pizza
+                    # try to get the target pizza
+                    change_input = int(change_input) - 1
+                    target_pizza = connection.get(
+                        'http://127.0.0.1:5000/pizza/pop_single_pizza/' + user_order + "/" + str(change_input), "")
+                    if target_pizza.text != "Order Id does not exist" or target_pizza.text != "Index is not valid":
+
+                        print(target_pizza.text + " Delete Done")
                     else:
-                        # ask user if wanna edit more pizza?
-                        cont = input("Edit more pizza? Y for Yes, other input for NO\n")
-                        if cont != "Y":
-                            # print(server_code.text)
-                            break
-
+                        print(target_pizza.text)
+            else:
+                break
         # ask user if they want change drinks?
         drinks_list = connection.get("http://127.0.0.1:5000/pizza/get_drink_list/"+user_order,"")
         print(drinks_list.text)
