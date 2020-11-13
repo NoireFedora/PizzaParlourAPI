@@ -245,3 +245,4 @@ def test_add_menu():
     response = app.test_client().post('/pizza/add_menu/Fungi/5')
     assert response.status_code == 200
     assert response.data == b'Type:Fungi(5) is added to menu'
+
