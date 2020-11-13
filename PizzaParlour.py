@@ -297,7 +297,7 @@ def pop_single_pizza(order_id, index):
     orders[order_id].total -= menu[pizza.size] + menu[pizza.type]
     for topping in pizza.toppings:
         orders[order_id].total -= menu[topping]
-    del pizza
+    del pizza_list[int(index)]
     return jsonify(json_file)
 
 # Delete a drink
@@ -310,7 +310,7 @@ def delete_drink(order_id, index):
         return "Index is not valid"
     drink = drink_list[int(index)]
     orders[order_id].total -= menu[drink]
-    del drink
+    del drink_list[int(index)]
     return "Drink Deleted"
 
 # Cancel an Order
