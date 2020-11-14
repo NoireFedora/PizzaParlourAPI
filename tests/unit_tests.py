@@ -3,11 +3,12 @@ import json
 from unittest import mock
 
 import main
-import operations
 
 
 from PizzaParlour import app
 
+
+# Unit Test for Client
 def test_main_exit():
     with mock.patch('sys.stdout', new=io.StringIO()) as fake_stdout:
         with mock.patch('builtins.input', return_value='5'):
@@ -16,14 +17,9 @@ def test_main_exit():
                                      'your food today?\nthank you for visiting Pizza parlour today\n\n '
 
 
-
-
-
-
 # Unit Tests for API
 def test_pizza():
     response = app.test_client().get('/pizza')
-
     assert response.status_code == 200
     assert response.data == b'Welcome to Pizza Planet!'
 
