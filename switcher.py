@@ -17,7 +17,8 @@ def operation_option(code):
         "3": "cancel",
         "4": "submit",
         "5": "menu",
-        "6": "Q"
+        "6": "addPizzaType",
+        "7": "Q"
     }
     return switcher.get(code, "Invalid OP")
 

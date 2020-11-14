@@ -3,6 +3,17 @@ import switcher
 import json
 import connection
 
+def add_Pizza_type():
+    # first get user input
+    new_item_name = input("please enter the name")
+    new_item_price = input("please enter the price in $")
+    # send the request
+    if new_item_price.isdigit():
+        # send these two parameter to the api
+        server_code = connection.post('http://127.0.0.1:5000/pizza/add_menu/'+new_item_name+'/'+new_item_price,"")
+        print(server_code.text)
+    else:
+        print("sorry you price is not in digit")
 
 def creat_order(delivery_method, Address):
     # first get the order number from api
@@ -35,7 +46,7 @@ def creat_order(delivery_method, Address):
                                 "chicken\n6: "
                                 "beef\n7: pepperoni\n")
             cur_topping = switcher.pizza_topping_option(cur_topping)
-            if pizza_topping == "Invalid OP":
+            if cur_topping == "Invalid OP":
                 print("invalid input please try again\n")
             else:
                 pizza_topping.append(cur_topping)
@@ -84,7 +95,7 @@ def creat_order(delivery_method, Address):
                           "Diet_Pepsi\n6: "
                           "Dr.Pepper\n7: Water\n8: Juice\n")
         cur_drink = switcher.drink_option(cur_drink)
-        if drinks == "Invalid OP":
+        if cur_drink == "Invalid OP":
             print("invalid input please try again\n")
         else:
             drinks.append(cur_drink)
@@ -209,7 +220,7 @@ def edit_order(delivery_method, Address):
                         # switch the new size and the old size
                         print("new size stored")
                     else:
-                        new_size=size
+                        new_size = size
                     # ask if they want to edit the pizza topping
                     user_decision = input("do you want to change you pizza topping? Y for yes other for skip")
                     if user_decision == "Y":
@@ -222,7 +233,7 @@ def edit_order(delivery_method, Address):
                                 "chicken\n6: "
                                 "beef\n7: pepperoni\n")
                             cur_topping = switcher.pizza_topping_option(cur_topping)
-                            if pizza_topping == "Invalid OP":
+                            if cur_topping == "Invalid OP":
                                 print("invalid input please try again\n")
                             else:
                                 pizza_topping.append(cur_topping)
@@ -329,7 +340,7 @@ def edit_order(delivery_method, Address):
                             "chicken\n6: "
                             "beef\n7: pepperoni\n")
                         cur_topping = switcher.pizza_topping_option(cur_topping)
-                        if pizza_topping == "Invalid OP":
+                        if cur_topping == "Invalid OP":
                             print("invalid input please try again\n")
                         else:
                             pizza_topping.append(cur_topping)
@@ -406,7 +417,7 @@ def edit_order(delivery_method, Address):
                                   "Diet_Pepsi\n6: "
                                   "Dr.Pepper\n7: Water\n8: Juice\n")
                 cur_drink = switcher.drink_option(cur_drink)
-                if drinks == "Invalid OP":
+                if cur_drink == "Invalid OP":
                     print("invalid input please try again\n")
                 else:
                     drinks.append(cur_drink)

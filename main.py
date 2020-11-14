@@ -27,7 +27,7 @@ def main():
 
         while True:
             operation_input = input("What do you wanna do Today?\n1: create order\n2: edit order\n3: cancel order\n4: "
-                                    "submit order\n5: menu\n6: Back\n")
+                                    "submit order\n5: menu\n6: add pizza type\n7: Back\n")
             operation = switcher.operation_option(operation_input)
             if operation == "Invalid OP":
                 print("sorry you operation is invalid please reselect")
@@ -48,7 +48,8 @@ def main():
                 code = operations.edit_order(delivery_method, Address)
             elif operation == "Q":
                 break
-
+            elif operation == "addPizzaType":
+                code = operations.add_Pizza_type()
     print("thank you for visiting Pizza parlour today\n")
 
 
