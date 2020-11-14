@@ -3,6 +3,7 @@ import switcher
 import json
 import connection
 
+
 def add_Pizza_type():
     # first get user input
     new_item_name = input("please enter the name")
@@ -10,10 +11,12 @@ def add_Pizza_type():
     # send the request
     if new_item_price.isdigit():
         # send these two parameter to the api
-        server_code = connection.post('http://127.0.0.1:5000/pizza/add_menu/'+new_item_name+'/'+new_item_price,"")
+        server_code = connection.post('http://127.0.0.1:5000/pizza/add_menu/' + new_item_name + '/' + new_item_price,
+                                      "")
         print(server_code.text)
     else:
         print("sorry you price is not in digit")
+
 
 def creat_order(delivery_method, Address):
     # first get the order number from api
@@ -80,7 +83,7 @@ def creat_order(delivery_method, Address):
                 new_list) + "]"
             server_code = connection.post('http://127.0.0.1:5000/pizza/submit_pizza/' + delivery_method, order)
             if server_code.status_code == 404:
-                print("smothing wrong with you pizza, please enter the pizza again")
+                print("something wrong with you pizza, please enter the pizza again")
             else:
                 print(server_code.text)
                 cont = input("add more pizza? Y for Yes, other input for NO\n")
@@ -115,7 +118,7 @@ def creat_order(delivery_method, Address):
         server_code = connection.post('http://127.0.0.1:5000/pizza/submit_drinks/' + delivery_method, pizza_json)
 
         if server_code.status_code == 404:
-            print("smothing wrong with you drink, please enter the drink again")
+            print("something wrong with you drink, please enter the drink again")
         else:
             print(server_code.text)
 
@@ -125,7 +128,7 @@ def creat_order(delivery_method, Address):
         print(order)
         server_code = connection.post('http://127.0.0.1:5000/pizza/submit_drinks/' + delivery_method, order)
         if server_code.status_code == 404:
-            print("smothing wrong with you drink, please enter the drink again")
+            print("something wrong with you drink, please enter the drink again")
         else:
             print(server_code.text)
 
@@ -184,7 +187,7 @@ def pull_menu():
     return None
 
 
-def edit_order(delivery_method, Address):
+def edit_order(delivery_method):
     # first thing is to ask user for order id
     user_order = input("please enter your order ID :\n")
 
@@ -247,7 +250,6 @@ def edit_order(delivery_method, Address):
                     else:
                         pizza_topping = topping
                     # ask if user wanna change pizza type
-                    new_pizza_type = ""
                     user_decision = input("do you want change your pizza type? Y for yes other for skip\n")
                     if user_decision == "Y":
                         new_pizza_type = ""
@@ -256,10 +258,10 @@ def edit_order(delivery_method, Address):
                             if new_pizza_type == "":
                                 print("you need to select one type\n")
                     else:
-                        new_pizza_type=ptype
-                    # here we convert this pizza into json/csv and try to send to backend, if backend return not valid we send
-                    # the original pizza back and tell user it is not working
-                    # now we have a pizza trying to send this pizza to the api and store it
+                        new_pizza_type = ptype
+                    # here we convert this pizza into json/csv and try to send to backend, if backend return not
+                    # valid we send the original pizza back and tell user it is not working now we have a pizza
+                    # trying to send this pizza to the api and store it
                     if delivery_method != "Foodora":
                         order = {
                             "Id": user_order,
@@ -293,8 +295,7 @@ def edit_order(delivery_method, Address):
                     else:
                         # csv format
                         new_list = ','.join(pizza_topping)
-                        order = "Id,Size,Type,Toppings\n" + user_order + "," + new_size + "," + new_pizza_type + ",[" + str(
-                            new_list) + "]"
+                        order = "Id,Size,Type,Toppings\n" + user_order + "," + new_size + "," + new_pizza_type + ",["+str(new_list) + "]"
                         server_code = connection.post('http://127.0.0.1:5000/pizza/submit_pizza/' + delivery_method,
                                                       order)
                         if server_code.text != "Pizza Request Received":
@@ -405,7 +406,7 @@ def edit_order(delivery_method, Address):
             else:
                 break
         # ask user if they want change drinks?
-        drinks_list = connection.get("http://127.0.0.1:5000/pizza/get_drink_list/"+user_order,"")
+        drinks_list = connection.get("http://127.0.0.1:5000/pizza/get_drink_list/" + user_order, "")
         print(drinks_list.text)
         user_decision = input("do you want edit your drink? A for add, D for delete, other for skip")
         if user_decision == "A":
@@ -458,7 +459,8 @@ def edit_order(delivery_method, Address):
                 # ask which drink they wanna remove
                 delete_number = input("which drink do you want delete? left hands start at 1：\n")
                 delete_number = int(delete_number) - 1
-                server_code = connection.delete('http://127.0.0.1:5000/pizza/delete_drink/' + user_order + "/" + str(delete_number),"")
+                server_code = connection.delete(
+                    'http://127.0.0.1:5000/pizza/delete_drink/' + user_order + "/" + str(delete_number), "")
                 print(server_code.text)
 
                 # ask if user wanna delete more

@@ -33,23 +33,23 @@ def main():
                 print("sorry you operation is invalid please reselect")
             elif operation == "create":
                 # creat order
-                code = operations.creat_order(delivery_method, Address)
+                operations.creat_order(delivery_method, Address)
             elif operation == "submit":
                 # submit a order
-                code = operations.submit_order()
+                operations.submit_order()
             elif operation == "cancel":
                 # cancel a order
-                code = operations.cancel_order()
+                operations.cancel_order()
             elif operation == "menu":
                 # cancel a order
-                code = operations.pull_menu()
+                operations.pull_menu()
             elif operation == "edit":
                 # cancel a order
-                code = operations.edit_order(delivery_method, Address)
+                operations.edit_order(delivery_method)
             elif operation == "Q":
                 break
             elif operation == "addPizzaType":
-                code = operations.add_Pizza_type()
+                operations.add_Pizza_type()
     print("thank you for visiting Pizza parlour today\n")
 
 

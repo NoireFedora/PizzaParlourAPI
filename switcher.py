@@ -45,6 +45,7 @@ def pizza_topping_option(code):
     }
     return switcher.get(code, "Invalid OP")
 
+
 def drink_option(code):
     switcher = {
         "1": "Coke",

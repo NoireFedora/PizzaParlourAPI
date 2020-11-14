@@ -12,7 +12,8 @@ def test_main_exit():
     with mock.patch('sys.stdout', new=io.StringIO()) as fake_stdout:
         with mock.patch('builtins.input', return_value='5'):
             main.main()
-    assert fake_stdout.getvalue() == '***************Welcome to Pizza parlour***************\n How do you wanna get your food today?\nthank you for visiting Pizza parlour today\n\n'
+    assert fake_stdout.getvalue() == '***************Welcome to Pizza parlour***************\n How do you wanna get ' \
+                                     'your food today?\nthank you for visiting Pizza parlour today\n\n '
 
 
 
