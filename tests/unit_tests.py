@@ -4,7 +4,6 @@ from unittest import mock
 
 import main
 
-
 from PizzaParlour import app
 
 
@@ -15,6 +14,17 @@ def test_main_exit():
             main.main()
     assert fake_stdout.getvalue() == '***************Welcome to Pizza parlour***************\n How do you wanna get ' \
                                      'your food today?\nthank you for visiting Pizza parlour today\n\n '
+=======
+    assert fake_stdout.getvalue() == '***************Welcome to Pizza parlour***************\n How do you wanna get your food today?\nthank you for visiting Pizza parlour today\n\n'
+
+
+def test_operation_add_type_fail():
+    with mock.patch('sys.stdout', new=io.StringIO()) as fake_stdout:
+        with mock.patch('builtins.input', return_value='S'):
+            with mock.patch('builtins.input', return_value='S'):
+                operations.add_Pizza_type()
+    assert fake_stdout.getvalue() == 'sorry you price is not in digit\n'
+>>>>>>> Stashed changes
 
 
 # Unit Tests for API
@@ -27,22 +37,22 @@ def test_pizza():
 with open('menu.json') as json_file:
     menu = json.load(json_file)
 
-valid_pizza_csv      = "Id,Size,Type,Toppings\n1,Small,Neapolitan,[Chicken,Beef,Mushrooms]"
-valid_pizza_json     = {"Id": 1, "Size": "Small", "Type": "Neapolitan", "Toppings": ["Chicken", "Beef", "Mushrooms"]}
-valid_drinks_csv     = "Id,Drink\n1,[Coke,Pepsi]"
-valid_drinks_json    = {"Id": 1, "Drink": ["Coke", "Pepsi"]}
-valid_address_csv    = "Id,Drink\n1,UofT"
-valid_address_json   = {"Id": 1, "Address": "UofT"}
+valid_pizza_csv = "Id,Size,Type,Toppings\n1,Small,Neapolitan,[Chicken,Beef,Mushrooms]"
+valid_pizza_json = {"Id": 1, "Size": "Small", "Type": "Neapolitan", "Toppings": ["Chicken", "Beef", "Mushrooms"]}
+valid_drinks_csv = "Id,Drink\n1,[Coke,Pepsi]"
+valid_drinks_json = {"Id": 1, "Drink": ["Coke", "Pepsi"]}
+valid_address_csv = "Id,Drink\n1,UofT"
+valid_address_json = {"Id": 1, "Address": "UofT"}
 
-invalid_pizza_csv    = "Id,Size,Type,Toppings\n1,Small,Neapolitan,[Chicken,Beef,Ramen]"
-invalid_pizza_json   = {"Id": 1, "Size": "Monster", "Type": "Neapolitan", "Toppings": ["Chicken", "Beef", "Mushrooms"]}
-invalid_drinks_csv   = "Id,Drink\n1,[Coke,Milk]"
-invalid_drinks_json  = {"Drink": ["Coke", "Pepsi"]}
-invalid_address_csv  = "Address\nUofT"
+invalid_pizza_csv = "Id,Size,Type,Toppings\n1,Small,Neapolitan,[Chicken,Beef,Ramen]"
+invalid_pizza_json = {"Id": 1, "Size": "Monster", "Type": "Neapolitan", "Toppings": ["Chicken", "Beef", "Mushrooms"]}
+invalid_drinks_csv = "Id,Drink\n1,[Coke,Milk]"
+invalid_drinks_json = {"Drink": ["Coke", "Pepsi"]}
+invalid_address_csv = "Address\nUofT"
 invalid_address_json = {"Id": 1, "School": "UofT"}
 
-valid_address_json2  = {"Id": 2, "Address": "UofT"}
-valid_drinks_json5   = {"Id": 5, "Drink": ["Coke", "Pepsi"]}
+valid_address_json2 = {"Id": 2, "Address": "UofT"}
+valid_drinks_json5 = {"Id": 5, "Drink": ["Coke", "Pepsi"]}
 
 
 def test_get_id():
