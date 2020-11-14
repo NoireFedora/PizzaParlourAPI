@@ -2,7 +2,7 @@
 
 Run the main Flask module by running `python3 PizzaParlour.py`
 
-Run the main client by running python3 main.py
+Run the main client by running `python3 main.py`
 
 Run unit tests with coverage by running `pytest --cov-report term --cov=. tests/unit_tests.py`
 
@@ -15,6 +15,7 @@ input their address. <br>
 
 After input the address user will have the following options to choose, note here if the user is entering the wrong 
 option, the program will tell the user that the input is invalid and ask the user to input again. <br>
+
 1: Create order <br>
 2: Edit order <br>
 3: Cancel order <br>
@@ -79,12 +80,12 @@ Program will ask user to enter pizza type and pizza price and as long as the pri
 it to the menu.
 
 ## Pair Programming:
-In general, our program is divided into two parts: **API** part and **Client** Part, and each person is responsible for one 
-part (Yicheng Xue for API and Rui Zhu for Client). Rui looked for which API function and then Yicheng wrote it.
+In general, our program is divided into two parts: **API** part and **Client** Part, and each person is responsible for 
+one part (Yicheng Xue for API and Rui Zhu for Client). Rui looked for which API function and then Yicheng wrote it.
 We did pair programming on some features through screen sharing on discord and will show them as following:<br>
 
-(We **apologize** for we forget we have to show drivers for each feature on commit. Therefore, the commit is messed up and 
-will not reflect our pair programming but we actually did it.)
+(We **apologize** for we forget we have to show drivers for each feature on commit. Therefore, the commit is messed up 
+and will not reflect our pair programming but we actually did it.)
 
 #### 1. Submit a Pizza - API
 Driver: Rui Zhu <br>
@@ -141,13 +142,13 @@ case if the new pizza is invalid we can put the original one back.
 ## Program Design
 
 #### Design Pattern
-The first design pattern we are using is factory pattern, as each time API need a pizza object from CLI in different 
+The first design pattern we are using is **Factory** pattern, as each time API need a pizza object from CLI in different 
 form depends on the delivery app or if it is drink(a different version of Pizza) although in this assignment we don’t 
 have a specific function to do the factory job, but we have a clear pattern that accept different information and made 
 them into different json or csv format.
 
 #### Relationships between objects
-We have two Objects: Pizza and Order. Both of them have no function method since we think python is unlike Java that 
+We have two Objects: **Pizza** and **Order**. Both of them have no function method since we think python is unlike Java that 
 has private and public attributes so some get/edit methods are not necessary. We only use these Objects to save 
 information with a format. There is a global dictionary “orders” stores all Order Objects with their 
 unique “order_id”(an attribute of Order) as key (Example: {“1”: Order Object with order_id 1}). Order has an attribute 
@@ -155,7 +156,7 @@ called “pizza_list” which has a list that stores all Pizza Objects with the 
 (Example: Order.pizza_list = [Pizza 1, Pizza 2, Pizza 3]). 
 
 #### Function Design
-API Part
+**API Part**
 * **Submission**(submit_pizza, submi_drinks, submit_address):<br>
 We will record temporary Order in our server so every time the user input legal information the server will record it. 
 We separate the submission of these three types of information so that we don't have to submit a whole Order when the 
@@ -186,7 +187,7 @@ add and edit something in the menu with given name and price. Delete something i
 unit tests since we read menu.json in many unit tests and validity checks will be influenced a lot, so we didn't write 
 it.
 
-Client Part
+**Client Part**
 * **main.py**
 The main page of the program, call create_order() submit_order() cancel_order() pull_menu() edit_order() 
 add_Pizza_type() depends on user input.
@@ -224,4 +225,8 @@ Get the type name and the price from the user and send them to API and save.
 ## Code Craftsmanship
 Both Yicheng and Rui used PyCharm IDE to create clean code.
 
-
+## Other
+During test we find out that 100% of the function are having api calls which we have not find a way to mock those API 
+returns (prof answer the piazza in friday morning but we do not have enough time) so we can only cover 5% of the 
+operation.py and 30% of the main function as we can only test those input fail case that do not require API call.
+By the way, our unit tests of testing API (PizzaParlour.py) has 91% line coverage.
