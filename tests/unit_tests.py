@@ -3,18 +3,15 @@ import json
 from unittest import mock
 
 import main
+import operations
 
 from PizzaParlour import app
 
 
-# Unit Test for Client
 def test_main_exit():
     with mock.patch('sys.stdout', new=io.StringIO()) as fake_stdout:
         with mock.patch('builtins.input', return_value='5'):
             main.main()
-    assert fake_stdout.getvalue() == '***************Welcome to Pizza parlour***************\n How do you wanna get ' \
-                                     'your food today?\nthank you for visiting Pizza parlour today\n\n '
-=======
     assert fake_stdout.getvalue() == '***************Welcome to Pizza parlour***************\n How do you wanna get your food today?\nthank you for visiting Pizza parlour today\n\n'
 
 
@@ -24,12 +21,12 @@ def test_operation_add_type_fail():
             with mock.patch('builtins.input', return_value='S'):
                 operations.add_Pizza_type()
     assert fake_stdout.getvalue() == 'sorry you price is not in digit\n'
->>>>>>> Stashed changes
 
 
 # Unit Tests for API
 def test_pizza():
     response = app.test_client().get('/pizza')
+
     assert response.status_code == 200
     assert response.data == b'Welcome to Pizza Planet!'
 
