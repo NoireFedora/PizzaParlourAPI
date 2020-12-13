@@ -1,0 +1,28 @@
+Pair Programming (14.5/15):
+The report contained some good reflections on what went well and not well in the process.
+It would be nice to be more explicit on which commits were done with pair programming. It is a bit hard to figure out from the commit messages.
+
+
+Program design (16/20):
+The program design is good in general, but did not talk about any design patterns used specifically.
+
+Functionality (24/25):
+Have simple input error checking against wrong inputs.
+CLI is mostly easy to use and all the functionality that were tested worked. It would be better if user doesn't have to type all the selections (e.g. use a numbering system) or they can pick using up/down arrows.
+
+
+Tests (14/20):
+The project achieved around 50% coverage, coverage was lower mainly due to operations.py. 
+Don't need to start the server before all the tests can pass. 
+
+
+Code Craftsmanship (8/10):
+Some comments were provided in the code.
+The coding style looks clean and consistent.
+The report briefly mentioned the tools being used for development.
+
+md explanation and organization (8.5/10):
+The readme file included good set of instructions on how to run and test the program.
+Would be nice to include the set of dependencies that need to be installed for the program too.
+
+total: 85
