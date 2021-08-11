@@ -160,7 +160,7 @@ called “pizza_list” which has a list that stores all Pizza Objects with the 
 (Example: Order.pizza_list = [Pizza 1, Pizza 2, Pizza 3]). 
 
 #### Function Design
-**API Part**
+##### API Part
 * **Submission**(submit_pizza, submi_drinks, submit_address):<br>
 We will record temporary Order in our server so every time the user input legal information the server will record it. 
 We separate the submission of these three types of information so that we don't have to submit a whole Order when the 
