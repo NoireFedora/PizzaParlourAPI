@@ -191,7 +191,7 @@ add and edit something in the menu with given name and price. Delete something i
 unit tests since we read menu.json in many unit tests and validity checks will be influenced a lot, so we didn't write 
 it.
 
-**Client Part**
+##### Client Part
 * **main.py**
 The main page of the program, call create_order() submit_order() cancel_order() pull_menu() edit_order() 
 add_Pizza_type() depends on user input.
