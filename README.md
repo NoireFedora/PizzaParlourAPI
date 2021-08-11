@@ -1,4 +1,8 @@
-# a2-starter
+# Note
+This Python API is fully developed me and my partner @zhuruisy to fullfill the requirement of CSC301 Assignment 2 that to create an API for a virtual pizza parlour, based on
+some client requirements.
+
+# A2-starter
 
 Run the main Flask module by running `python3 PizzaParlour.py`
 
